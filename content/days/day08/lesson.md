@@ -196,7 +196,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## テストでも Provider で囲む
 
-テストのコードで、毎回 `QueryClientProvider` や `NuqsTestingAdapter` で囲んでいたのはこのためです。フック単体のテストでは `renderHook` の `wrapper` に Provider を渡します。
+テストのコードでも、`useQuery` や `useQueryStates` を使うコンポーネントは `QueryClientProvider` や `NuqsTestingAdapter` で囲む必要があります (Day 11 以降のテストで出てきます)。フック単体のテストでは `renderHook` の `wrapper` に Provider を渡します。
 
 ```tsx
 render(

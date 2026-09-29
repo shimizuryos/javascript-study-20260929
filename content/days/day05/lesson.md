@@ -77,7 +77,7 @@ const el = jsx('h1', { className: 'title', children: 'こんにちは' });
 - ルート (一番外側) の要素は 1 つ。複数並べたいときは **フラグメント** `<>...</>` で包みます。フラグメントは DOM に何も出力しない「まとめ役」です。
 - `<img />` のような空要素も必ず閉じます。
 - `class` は `className`、`for` は `htmlFor`。属性名は `onClick` のようなキャメルケースです。
-- `style={{ color: 'red' }}` の外側の `{ }` は「ここから JavaScript」、内側の `{ }` はオブジェクトリテラルです。数値は `px` として扱われます (`{ width: 40 }` → `width: 40px`)。
+- `style={{ color: 'red' }}` の外側の `{ }` は「ここから JavaScript」、内側の `{ }` はオブジェクトリテラルです。数値は多くの場合 `px` として扱われます (`{ width: 40 }` → `width: 40px`。ただし `opacity` や `lineHeight` など単位の無いプロパティはそのままの数値)。
 
 ## `{ }` で JavaScript の式を埋め込む
 

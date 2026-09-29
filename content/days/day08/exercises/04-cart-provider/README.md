@@ -4,7 +4,7 @@ optional: true
 hints:
   - "`CartProvider` の中で `const [items, setItems] = useState<string[]>([]);` を持ち、`add` / `remove` は関数型更新 (`setItems((prev) => ...)`) で書きます。"
   - "`add` と `remove` は `useCallback(..., [])`、value は `useMemo(() => ({ items, add, remove }), [items, add, remove])` で参照を安定させます。"
-  - "`useCart` は Day 8 の `useUser` と同じ形です。null なら 'CartProvider' を含むメッセージで throw します。"
+  - "`useCart` は演習 1 の `useUser` と同じ形です。null なら 'CartProvider' を含むメッセージで throw します。"
 ---
 
 カートの中身を、アプリのどこからでも読み書きできるようにします。

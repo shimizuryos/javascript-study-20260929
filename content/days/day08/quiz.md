@@ -126,7 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 ## query-client-in-body
 
-Providers コンポーネントで QueryClient を作る書き方として正しいものはどれですか?
+Providers コンポーネントで QueryClient を作る書き方として最も適切なものはどれですか?
 
 - [ ] `const queryClient = new QueryClient();` をコンポーネントの本体に書く
 - [x] `const [queryClient] = useState(() => new QueryClient());`
