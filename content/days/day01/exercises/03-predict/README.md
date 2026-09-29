@@ -26,8 +26,8 @@ const { page, ...rest } = { page: 2, q: 'ts', size: 20 };
 // Q5: merged の値は?
 const merged = { ...{ page: 2, q: 'ts' }, ...{ q: undefined } };
 
-// Q6: first の値は?
+// Q6: first の値は? (TypeScript では型エラーになる書き方ですが、JavaScript の動きを考えてください)
 const [first] = [];
 ```
 
-答えが `undefined` のときは `undefined`、オブジェクトのときは `{ ... }` をそのまま書きます。間違えた問題は、なぜそうなるのかをレッスンで確認しましょう。
+答えが `undefined` のときは `undefined`、オブジェクトのときは `{ ... }` をそのまま書きます (キーの順番も元のコードと同じにしてください)。間違えた問題は、なぜそうなるのかをレッスンで確認しましょう。

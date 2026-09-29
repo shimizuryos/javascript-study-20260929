@@ -40,7 +40,7 @@ export function useSharedScopeQuery<TRow>(
 ) {
 ```
 
-`<TRow>` はジェネリクス、`Promise<...>` は非同期処理の結果、`import type` は型だけの読み込みです。今日の最後に、この 9 行を 1 つずつ分解します。
+`<TRow>` はジェネリクス、`Promise<...>` は非同期処理の結果、`import type` は型だけの読み込みです。今日の最後に、このコードを 1 行ずつ分解します。
 
 ## ジェネリクス: 型の「引数」
 
@@ -69,7 +69,7 @@ export type Paginated<T> = {
 type UserPage = Paginated<User>; // { items: User[]; total: number }
 ```
 
-`string[]` を `Array<string>` とも書くのも同じ仕組みです。`Promise<User>` は「あとで `User` が手に入る Promise」です (後半で扱います)。
+`string[]` を `Array<string>` とも書けるのは、同じ仕組みです。`Promise<User>` は「あとで `User` が手に入る Promise」です (後半で扱います)。
 
 ### 型引数を明示するよくある場面
 
@@ -186,7 +186,7 @@ import UserList from './UserList'; // default: { } なし。名前は自由
 import React, { useState } from 'react'; // default と名前付きを同時に
 ```
 
-> **落とし穴:** default export と名前付き export は取り違えやすいです。default export を `import { UserList } from './UserList'` と `{ }` 付きで読み込むと、TypeScript では型エラー、JavaScript では `undefined` になります。Next.js の `page.tsx` / `layout.tsx` は default export が必須です (Day 9)。
+> **落とし穴:** default export と名前付き export は取り違えやすいです。default export を `import { UserList } from './UserList'` と `{ }` 付きで読み込むと、TypeScript では型エラーになります (型チェックをすり抜けて実行されると、`undefined` になったり読み込み自体が失敗したりします)。Next.js の `page.tsx` / `layout.tsx` は default export が必須です (Day 9)。
 
 ### import type
 

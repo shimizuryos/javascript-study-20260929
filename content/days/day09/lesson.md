@@ -309,7 +309,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 1. `providers.tsx` は Context と `useState` を使うので `'use client'` が必要。
 2. `useState(() => new QueryClient())` — QueryClient (キャッシュの入れ物) を **最初の 1 回だけ** 作る。本体に `new QueryClient()` と直接書くと、再レンダーのたびにキャッシュが空になる。
 3. `layout.tsx` は `Providers` を import して `children` を包むだけ。**`children` として渡る各ページは Server Component のまま**です (ルール 3)。
-4. Next.js の公式ガイドでは、`useState` の代わりに `typeof window === 'undefined'` でサーバーかどうかを判定する `getQueryClient()` 関数を使う書き方も紹介されています。どちらも「ブラウザでは 1 つを使い回す」ための工夫です。
+4. TanStack Query の公式ガイド (Advanced Server Rendering) では、`useState` の代わりに `isServer` (`typeof window === 'undefined'` と同じ判定) でサーバーかどうかを分岐する `getQueryClient()` 関数を使う書き方も紹介されています。どちらも「ブラウザでは 1 つを使い回す」ための工夫です。
 
 ## まとめ: 目標コードの 1 行目を読む
 

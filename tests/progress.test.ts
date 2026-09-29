@@ -40,7 +40,10 @@ describe('dayProgress', () => {
       exercises: { 'day01/01': { attempts: 1, passedAt: 'x' } },
     };
     expect(dayProgress(meta(1, true), withProgress(base)).status).toBe('doing');
-    const passed = withProgress({ ...base, exams: { 'day01/exam': { attempts: 1, best: 90, passedAt: 'x', lastAt: 'x' } } });
+    const passed = withProgress({
+      ...base,
+      exams: { 'day01/exam': { attempts: 1, best: 90, passedAt: 'x', lastAt: 'x' } },
+    });
     expect(dayProgress(meta(1, true), passed).status).toBe('done');
   });
 

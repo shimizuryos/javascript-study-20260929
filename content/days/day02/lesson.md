@@ -71,7 +71,7 @@ user['favorite-color']; // 'blue' (- を含むキーは [ ] でしか書けな�
 
 const key = 'name';
 user[key]; // 'Alice' ← 変数の「中身」をキーとして使う
-user.key; // undefined ← 「key」という名前のプロパティを探してしまう
+user.key; // undefined ← 「key」という名前のプロパティを探してしまう (TypeScript では型エラー)
 ```
 
 **`[ ]` の中は式** (変数や計算) で、その結果がキーになります。これが次の「計算されたキー」につながります。

@@ -19,9 +19,10 @@
 
 初回だけ次の設定が必要です。
 
-1. リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にする
-2. main に push する (または Actions タブから `CI / Deploy` を手動実行)
-3. `https://<ユーザー名>.github.io/<リポジトリ名>/` で公開される
+1. `main` ブランチを作る (GitHub の Branches 画面から、このコードのブランチを元に作成) し、**Settings → General → Default branch** を `main` にする
+2. **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にする
+3. main に push する (または Actions タブから `CI / Deploy` を main で手動実行)
+4. `https://<ユーザー名>.github.io/<リポジトリ名>/` で公開される (このリポジトリなら `https://shimizuryos.github.io/javascript-study-20260929/`)
 
 > **注意:** GitHub Pages は、無料プランでは **public リポジトリ** でのみ使えます。private のまま公開したい場合は GitHub Pro 等 (学生なら GitHub Student Developer Pack に含まれる) が必要です。
 > どちらも使えない場合は、`out/` を Cloudflare Pages / Netlify / Vercel など静的ホスティングにデプロイしても動きます (`PAGES_BASE_PATH` は空にする)。

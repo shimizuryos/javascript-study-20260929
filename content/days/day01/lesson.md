@@ -126,7 +126,7 @@ const user = { name: 'Alice', age: 30, address: { city: 'Tokyo' } };
 
 const { name, age } = user; // name = 'Alice', age = 30
 const { name: userName } = user; // 名前を付け替える (userName = 'Alice')
-const { email = 'なし' } = user; // 無ければデフォルト値
+const { email = 'なし' } = user; // 無ければデフォルト値 (※ この user には email が無いので TypeScript では型エラー。JavaScript の動きとして読む)
 const {
   address: { city },
 } = user; // ネストしたものを取り出す (city = 'Tokyo')

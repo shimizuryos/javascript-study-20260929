@@ -38,13 +38,6 @@ function Status({ items }: { items: string[] }) {
 // Q6
 const count = 0;
 <p>{count > 0 && `${count} 件`}</p>
-
-// Q7
-<ul>
-  {['a', 'b'].map((s, i) => (
-    <li key={s}>{i}{s}</li>
-  ))}
-</ul>
 ```
 
 例: `<p>{1 + 1}個</p>` なら `'2個'` です。間違えた問題は、レンダーされる値の表 (レッスンの「`{ }` で JavaScript の式を埋め込む」) で確認しましょう。

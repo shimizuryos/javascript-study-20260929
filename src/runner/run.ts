@@ -8,7 +8,7 @@ import { configure as configureDom, prettyDOM } from '@testing-library/dom';
 import { compile, CompileError } from './transform';
 import { AssertionError, expect, fn } from './expect';
 import { format } from './format';
-import { availableModuleNames, libraryModules } from './modules';
+import { availableModuleNames, libraryModules, setUpdateGuard } from './modules';
 import { cleanup } from '@testing-library/react';
 import { mockRouter } from './next-mock';
 import type { LogEntry, RunError, RunRequest, RunResult, TestOutcome } from './types';
@@ -53,13 +53,26 @@ function translateDomMessage(message: string) {
 type Hook = () => unknown;
 type TestCase = { name: string; fn: () => unknown; timeout?: number; before: Hook[]; after: Hook[] };
 
+const MAX_UPDATES_PER_TEST = 5000;
+
 function createGuard() {
   let deadline = Number.POSITIVE_INFINITY;
   let count = 0;
+  let updates = 0;
   return {
     reset(ms: number) {
       deadline = Date.now() + ms;
       count = 0;
+      updates = 0;
+    },
+    /** state の更新 (setState / dispatch) のたびに呼ばれる */
+    checkUpdate() {
+      updates++;
+      if (updates > MAX_UPDATES_PER_TEST || ((updates & 63) === 0 && Date.now() > deadline)) {
+        throw new Error(
+          'state の更新が止まりません: 無限に再レンダーしている可能性があります。useEffect の中で毎回 state を更新していないか、依存配列にレンダーのたびに新しく作られるオブジェクトや配列が入っていないかを確認してください。',
+        );
+      }
     },
     check() {
       if ((++count & 1023) === 0 && Date.now() > deadline) {
@@ -293,6 +306,7 @@ export async function runTests(req: RunRequest): Promise<RunResult> {
 
   const modules = createModuleSystem(compiled, globals);
   const restoreConsole = captureGlobalConsole(logs);
+  setUpdateGuard(guard.checkUpdate);
   try {
     return await execute();
   } finally {

@@ -5,5 +5,4 @@ export const answers = {
   q4: '500' as unknown,
   q5: 'A複数あり' as unknown,
   q6: '' as unknown,
-  q7: '0a1b' as unknown,
 };

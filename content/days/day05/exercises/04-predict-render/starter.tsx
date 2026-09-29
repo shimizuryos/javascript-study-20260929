@@ -6,5 +6,4 @@ export const answers = {
   q4: '???' as unknown,
   q5: '???' as unknown,
   q6: '???' as unknown,
-  q7: '???' as unknown,
 };

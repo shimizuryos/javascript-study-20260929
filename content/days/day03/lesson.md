@@ -154,7 +154,7 @@ function toPage(value: string | number): number {
   return value; // value: number
 }
 
-// ③ truthy チェック — '' も弾かれる点に注意 (Day 2 の || と同じ)
+// ③ truthy チェック (falsy でないことの確認) — '' も弾かれる点に注意 (Day 2 の || と同じ)
 function trimmed(q: string | null | undefined) {
   if (!q) return null; // null / undefined / '' はここで終わり
   return q.trim(); // q: string

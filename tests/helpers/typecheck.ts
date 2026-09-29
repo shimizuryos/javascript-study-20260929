@@ -24,5 +24,6 @@ export function createTypeChecker() {
   const globals = fs.readFileSync(path.resolve('public/runner/test-globals.d.ts'), 'utf8');
   const env = fs.readFileSync(path.resolve('public/runner/typecheck-env.d.ts'), 'utf8');
   const check = core.createChecker(ts, libFiles) as (files: Record<string, string>) => TypeDiagnostic[];
-  return (files: Record<string, string>) => check({ 'test-globals.d.ts': globals, 'typecheck-env.d.ts': env, ...files });
+  return (files: Record<string, string>) =>
+    check({ 'test-globals.d.ts': globals, 'typecheck-env.d.ts': env, ...files });
 }

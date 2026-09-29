@@ -65,17 +65,3 @@ test('Q6', () => {
   const count = 0 as number;
   expect(same(answers.q6, textOf(<p>{count > 0 && `${count} 件`}</p>))).toBe(true);
 });
-
-test('Q7', () => {
-  const ui = (
-    <ul>
-      {['a', 'b'].map((s, i) => (
-        <li key={s}>
-          {i}
-          {s}
-        </li>
-      ))}
-    </ul>
-  );
-  expect(same(answers.q7, textOf(ui))).toBe(true);
-});

@@ -221,3 +221,51 @@ test('missing', () => { render(<X />); screen.getByRole('button'); });`,
     expect(r.tests[0].error).not.toContain('\\u001b[');
   });
 });
+
+describe('update guard', () => {
+  it('stops an effect that sets state on every render', async () => {
+    const r = await run(
+      {
+        'main.tsx': `import { useEffect, useState } from 'react';
+export function Loop() {
+  const [n, setN] = useState(0);
+  useEffect(() => { setN((v) => v + 1); });
+  return <p>{n}</p>;
+}`,
+        'test.tsx': `import { render } from '@testing-library/react';
+import { Loop } from './main';
+test('loop', () => { render(<Loop />); });`,
+      },
+      'test.tsx',
+    );
+    expect(r.tests[0].status).toBe('failed');
+    expect(r.tests[0].error).toContain('state の更新が止まりません');
+  });
+
+  it('keeps setState identity stable across renders', async () => {
+    const r = await run(
+      {
+        'main.tsx': `import { useEffect, useReducer, useState } from 'react';
+export function Stable({ onSetter }: { onSetter: (f: unknown) => void }) {
+  const [n, setN] = useState(0);
+  const [m, dispatch] = useReducer((s: number, a: number) => s + a, 0);
+  useEffect(() => { onSetter(setN); onSetter(dispatch); });
+  return <button onClick={() => { setN(n + 1); dispatch(2); }}>{n}-{m}</button>;
+}`,
+        'test.tsx': `import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Stable } from './main';
+test('stable', async () => {
+  const seen: unknown[] = [];
+  render(<Stable onSetter={(f) => seen.push(f)} />);
+  await userEvent.click(screen.getByRole('button'));
+  expect(screen.getByRole('button')).toHaveTextContent('1-2');
+  expect(seen[0]).toBe(seen[2]);
+  expect(seen[1]).toBe(seen[3]);
+});`,
+      },
+      'test.tsx',
+    );
+    expect(r.tests[0]).toMatchObject({ status: 'passed' });
+  });
+});
