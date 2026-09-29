@@ -201,7 +201,7 @@ URL  ?scope=team&page=3&q=田   → ① に戻る
 
 `?page=2` (全 45 件、`pageSize` 20) で「次へ」を押したときの動きです。
 
-1. `table.nextPage()` → テーブルは内部に state を持たないので、`onPaginationChange((old) => ({ ...old, pageIndex: old.pageIndex + 1 }))` を呼ぶだけ
+1. `table.nextPage()` → テーブルは `state` で外から渡された値を使うだけで自分では変えないので、`onPaginationChange((old) => ({ ...old, pageIndex: old.pageIndex + 1 }))` を呼ぶだけ
 2. フックが関数を実行: `updater({ pageIndex: 1, pageSize: 20 })` → `{ pageIndex: 2, pageSize: 20 }` → `setParams({ page: 3 })`
 3. nuqs はフックの state をすぐ更新して再レンダーさせる。URL の書き換えは少しだけ後 (複数の更新をまとめ、書き込みの間隔も既定で 50ms 以上あける)。`history: 'replace'`・`shallow: true` なので履歴は増えず、サーバーにも行かない
 4. 再レンダー: `page` = 3 → queryKey が `[..., { page: 3, ... }]` に変わる → キャッシュに無いので取得開始。`keepPreviousData` により `data` は 2 ページ目のまま
@@ -268,7 +268,7 @@ export function MembersTable() {
 ```
 
 - `useReactTable` は `if (isPending) return` より **前** で呼んでいます。フックは条件分岐の後ろに置けません (Day 7)。
-- `getPageCount()` は `Math.ceil(rowCount / pageSize)` です。`rowCount` を渡し忘れると「次へ」が正しく無効になりません。
+- `getPageCount()` は `Math.ceil(rowCount / pageSize)` です。`rowCount` を渡し忘れると、手元の 1 ページ分の行数 (20 件) から `getPageCount()` が 1 と計算され、「次へ」がずっと押せなくなります。
 - このコンポーネントの外側には `NuqsAdapter` と `QueryClientProvider` (Day 8・9) が必要です。また nuqs は内部で `useSearchParams` を使うので、`page.tsx` では `<Suspense>` で囲むのが定石です (Day 10)。
 
 ```tsx

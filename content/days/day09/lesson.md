@@ -249,7 +249,7 @@ Server Component の描画結果はデータとしてブラウザへ送られま
 
 ### 3. Client Component の中に Server Component を置くには children で渡す
 
-Client Component のファイルから Server Component を import することはできません (import したものは全部クライアント側になるため)。代わりに **Server Component 側で組み立てて `children` として渡します**。
+Client Component のファイルから import したコンポーネントは、すべてクライアント側のコードとして扱われます。つまり Server Component を import しても「Server Component として」は動かず、async コンポーネントやサーバー専用の処理 (DB アクセスなど) を含むものはエラーになります。サーバーで動かしたい部品は、**Server Component 側で組み立てて `children` として渡します**。
 
 ```tsx
 // app/page.tsx (Server Component)

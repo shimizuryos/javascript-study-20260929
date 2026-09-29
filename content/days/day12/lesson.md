@@ -246,7 +246,7 @@ const { data, isPlaceholderData } = useQuery({
 const { data: count } = useQuery({
   queryKey: ['users'],
   queryFn: fetchUsers,
-  select: (users) => users.length, // data の型は number
+  select: (users) => users.length, // data の型は number | undefined (取得前は undefined)
 });
 ```
 

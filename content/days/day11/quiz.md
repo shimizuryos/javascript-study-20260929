@@ -102,7 +102,7 @@ const setSearch = (text: string) => setParams({ q: text || null, page: null });
 
 ## history-push
 
-ユーザーが `?page=1` の画面で「次へ」を 2 回押して `?page=3` にしたあと、ブラウザの「戻る」を押しました。表示されるのは何ページ目ですか?
+ユーザーが 1 ページ目 (URL に `page` が無い状態) で「次へ」を 2 回押して `?page=3` にしたあと、ブラウザの「戻る」を押しました。表示されるのは何ページ目ですか?
 
 ```ts
 const [page, setPage] = useQueryState(

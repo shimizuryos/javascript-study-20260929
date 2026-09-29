@@ -1,10 +1,19 @@
 import { answers } from './main';
 
-// 正解の値そのものがエラーメッセージに出ないように、一致したかどうかだけを見る
-const same = (answer: unknown, actual: unknown) =>
-  typeof answer === typeof actual &&
-  JSON.stringify(answer) === JSON.stringify(actual) &&
-  (typeof actual !== 'object' || actual === null || Object.keys(answer as object).join() === Object.keys(actual).join());
+// 正解の値そのものがエラーメッセージに出ないように、一致したかどうかだけを見る。
+// オブジェクトはキーの順番に関係なく比べ、値が undefined のプロパティも「ある」ものとして区別する。
+const canon = (v: unknown): string =>
+  v === undefined
+    ? 'undefined'
+    : v === null || typeof v !== 'object'
+      ? JSON.stringify(v)
+      : Array.isArray(v)
+        ? `[${v.map(canon).join(',')}]`
+        : `{${Object.keys(v)
+            .sort()
+            .map((k) => `${k}:${canon((v as Record<string, unknown>)[k])}`)
+            .join(',')}}`;
+const same = (answer: unknown, actual: unknown) => canon(answer) === canon(actual);
 
 test('Q1: y の値', () => {
   const [, y = 5] = [1, undefined];

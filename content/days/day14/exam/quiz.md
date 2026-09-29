@@ -67,9 +67,9 @@ const scopeParsers = {
 - [ ] 実行時に URL のキー名が `'SCOPE_KEYS.page'` のような文字列になる
 - [ ] 何も変わらない (`as const` は実行時の値にしか影響しない)
 - [x] 実行時の動きは同じだが、キーの型が `string` になり、`{ scope, page, q }` の型が `string | number | null` に広がる
-- [ ] `SCOPE_KEYS` が読み取り専用でなくなるので、コンパイルエラーになる
+- [ ] `SCOPE_KEYS` が読み取り専用でなくなるので、`useQueryStates` が実行時にエラーを投げる
 
-> `as const` が無いと `SCOPE_KEYS.page` の型は `'page'` ではなく `string` になります (Day 3)。計算されたキー `[SCOPE_KEYS.page]` の型も `string` になり (Day 2)、`scopeParsers` は「どんな文字列キーでも持てるオブジェクト」の型になってしまいます。その結果 `scope` も `page` も `string | number | null` という曖昧な型になり、型による保護が失われます。実行時の値 (`'page'` という文字列) は変わりません。
+> `as const` が無いと `SCOPE_KEYS.page` の型は `'page'` ではなく `string` になります (Day 3)。計算されたキー `[SCOPE_KEYS.page]` の型も `string` になり (Day 2)、`scopeParsers` は「どんな文字列キーでも持てるオブジェクト」の型になってしまいます。その結果 `scope` も `page` も `string | number | null` という曖昧な型になり、型による保護が失われます (続く `page - 1` や `fetcher({ scope, page, q }, signal)` の行が型エラーになります)。実行時の値 (`'page'` という文字列) は変わらないので、実行時エラーにはなりません。
 
 ## page-null
 
