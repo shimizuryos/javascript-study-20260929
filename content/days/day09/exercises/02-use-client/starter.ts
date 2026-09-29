@@ -1,0 +1,11 @@
+// '???' を true ('use client' が必要) か false (不要) に書き換えてください。
+export const answers = {
+  q1: '???' as unknown,
+  q2: '???' as unknown,
+  q3: '???' as unknown,
+  q4: '???' as unknown,
+  q5: '???' as unknown,
+  q6: '???' as unknown,
+  q7: '???' as unknown,
+  q8: '???' as unknown,
+};

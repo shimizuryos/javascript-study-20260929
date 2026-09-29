@@ -1,0 +1,10 @@
+export type A1 = 'mine';
+export type A2 = string;
+export type A3 = { page: number; q: string };
+export type A4 = { readonly page: 1; readonly q: 'ts' };
+export type A5 = number[];
+export type A6 = (string | number)[];
+export type A7 = readonly ['all', 'mine'];
+export type A8 = 'all' | 'mine';
+export type A9 = 'x' | null;
+export type A10 = 'page' | 'q';

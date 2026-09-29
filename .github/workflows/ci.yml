@@ -1,0 +1,76 @@
+name: CI / Deploy
+
+# すべての push と PR で「lint・型チェック・全演習の検証・ビルド」を行い、
+# main ブランチへの push のときだけ GitHub Pages に公開する。
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint / Typecheck / Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      # 全演習について「模範解答はテストに通る・初期コードは通らない」を検証する
+      - run: npm test
+
+  build:
+    name: Build + E2E
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          # GitHub Pages のプロジェクトサイトは https://<user>.github.io/<repo>/ で配信される
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_TELEMETRY_DISABLED: 1
+      # 実ブラウザで「演習を実行して採点される」ところまで確認する
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

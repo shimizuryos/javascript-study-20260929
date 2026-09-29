@@ -1,0 +1,19 @@
+{
+  "file": "useSharedScopeQuery.ts",
+  "segments": [
+    { "from": 1, "to": 1, "day": 9, "note": "'use client' — このファイルはクライアントコンポーネント側で動く (フックを使うため)。" },
+    { "from": 3, "to": 7, "day": 4, "note": "import 文。{ } は名前付き import、import type は「型だけ」を読み込む書き方。" },
+    { "from": 9, "to": 14, "day": 3, "note": "as const で、値を読み取り専用のリテラル型 ('scope' など) として固定している。" },
+    { "from": 16, "to": 17, "day": 3, "note": "配列 as const から (typeof SCOPES)[number] で 'all' | 'mine' | 'team' というユニオン型を作る定番パターン。" },
+    { "from": 19, "to": 23, "day": 11, "note": "{ [KEY]: value } (計算されたキー) で URL のクエリ名をキーにし、nuqs のパーサーで「URL の文字列 ⇔ 値」の変換方法を決めている。withDefault があると null にならない。" },
+    { "from": 25, "to": 25, "day": 3, "note": "q: string | null — 「文字列 または null」。検索語が URL に無いときは null。" },
+    { "from": 27, "to": 30, "day": 3, "note": "? 付きのプロパティは省略可能 (undefined になりうる)。" },
+    { "from": 32, "to": 36, "day": 4, "note": "<TRow> はジェネリクス (行の型は呼び出し側が決める)。第 3 引数は分割代入 + デフォルト値で、省略時は {} を使う。" },
+    { "from": 37, "to": 37, "day": 11, "note": "useQueryStates は [値のオブジェクト, 更新関数] を返す。配列とオブジェクトの分割代入を同時に使っている。" },
+    { "from": 39, "to": 44, "day": 12, "note": "TanStack Query。queryKey に URL の状態を入れるので、ページや検索語が変わると自動で再取得される。keepPreviousData で切り替え中も前のデータを表示し続ける。" },
+    { "from": 46, "to": 46, "day": 13, "note": "URL の page (1 始まり) を TanStack Table の pageIndex (0 始まり) に変換。useMemo で参照を安定させる。" },
+    { "from": 48, "to": 51, "day": 13, "note": "テーブルからのページ変更を URL に書き戻す。updater は「新しい値」か「前の値を受け取る関数」のどちらか。" },
+    { "from": 53, "to": 54, "day": 11, "note": "null をセットするとクエリが URL から消え、デフォルト値に戻る。条件が変わったら 1 ページ目に戻すのが定石。" },
+    { "from": 56, "to": 70, "day": 12, "note": "?. と ?? で「データがまだ無い」ときの値を決めて、画面側が使いやすい形にまとめて返す。" }
+  ]
+}

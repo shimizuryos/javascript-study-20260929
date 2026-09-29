@@ -1,0 +1,11 @@
+// unknown を予想した型に書き換えてください (typeof は使わない)。
+export type A1 = unknown;
+export type A2 = unknown;
+export type A3 = unknown;
+export type A4 = unknown;
+export type A5 = unknown;
+export type A6 = unknown;
+export type A7 = unknown;
+export type A8 = unknown;
+export type A9 = unknown;
+export type A10 = unknown;
