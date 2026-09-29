@@ -35,6 +35,7 @@ export function PracticeQuiz({ questions }: { questions: QuizQuestion[] }) {
             index={i}
             selected={a?.choice ?? null}
             revealed={!!a}
+            reviewNote
             onSelect={(choice) => progressActions.answerQuiz(q.id, choice, q.options[choice].correct)}
           />
         );

@@ -30,8 +30,11 @@ export function ExamRunner({ exam }: { exam: Exam }) {
 
   const grade = () => {
     const unanswered = exam.quiz.length - answeredCount;
-    if (unanswered > 0 && !window.confirm(`未回答が ${unanswered} 問あります (不正解として扱います)。採点しますか?`)) return;
-    const correctIds = exam.quiz.filter((q) => answers[q.id] !== undefined && q.options[answers[q.id]].correct).map((q) => q.id);
+    if (unanswered > 0 && !window.confirm(`未回答が ${unanswered} 問あります (不正解として扱います)。採点しますか?`))
+      return;
+    const correctIds = exam.quiz
+      .filter((q) => answers[q.id] !== undefined && q.options[answers[q.id]].correct)
+      .map((q) => q.id);
     const wrongIds = exam.quiz.map((q) => q.id).filter((id) => !correctIds.includes(id));
     const total = exam.quiz.length + exMax;
     const score = total === 0 ? 0 : Math.round(((correctIds.length + exNow) / total) * 100);
@@ -62,7 +65,9 @@ export function ExamRunner({ exam }: { exam: Exam }) {
             className="mt-3"
           />
           <p className="mt-3 font-semibold">
-            {graded.score >= exam.passScore ? '合格です! 🎉' : `不合格 (合格ライン ${exam.passScore}%)。解説を読んで再挑戦しましょう。`}
+            {graded.score >= exam.passScore
+              ? '合格です! 🎉'
+              : `不合格 (合格ライン ${exam.passScore}%)。解説を読んで再挑戦しましょう。`}
           </p>
           <ul className="mt-2 space-y-1 text-sm text-ink-2">
             <li>
@@ -73,7 +78,11 @@ export function ExamRunner({ exam }: { exam: Exam }) {
             </li>
             <li>間違えた選択問題は「復習」に追加されました。</li>
           </ul>
-          <button type="button" onClick={retry} className="mt-4 rounded-lg border border-line px-4 py-2 text-sm hover:bg-muted">
+          <button
+            type="button"
+            onClick={retry}
+            className="mt-4 rounded-lg border border-line px-4 py-2 text-sm hover:bg-muted"
+          >
             もう一度受ける
           </button>
         </Card>
@@ -87,8 +96,12 @@ export function ExamRunner({ exam }: { exam: Exam }) {
       )}
 
       <section>
-        <h2 className="mb-1 text-lg font-bold">第 1 部: 演習 ({exam.exercises.length} 問・各 {EXERCISE_POINTS} 点)</h2>
-        <p className="mb-3 text-sm text-ink-2">先に演習を解いてから、第 2 部の選択問題に答えて「採点する」を押してください。</p>
+        <h2 className="mb-1 text-lg font-bold">
+          第 1 部: 演習 ({exam.exercises.length} 問・各 {EXERCISE_POINTS} 点)
+        </h2>
+        <p className="mb-3 text-sm text-ink-2">
+          先に演習を解いてから、第 2 部の選択問題に答えて「採点する」を押してください。
+        </p>
         <ol className="grid gap-2">
           {exam.exercises.map((e, i) => {
             const pts = exercisePoints(progress, e.id);
@@ -126,7 +139,9 @@ export function ExamRunner({ exam }: { exam: Exam }) {
       <section>
         <h2 className="mb-1 text-lg font-bold">第 2 部: 選択問題 ({exam.quiz.length} 問・各 1 点)</h2>
         <p className="mb-3 text-sm text-ink-2">
-          {graded ? '正解と解説を確認しましょう。' : `採点するまで正誤は表示されません。回答 ${answeredCount} / ${exam.quiz.length}`}
+          {graded
+            ? '正解と解説を確認しましょう。'
+            : `採点するまで正誤は表示されません。回答 ${answeredCount} / ${exam.quiz.length}`}
         </p>
         <div className="space-y-4">
           {exam.quiz.map((q, i) => (
@@ -136,6 +151,7 @@ export function ExamRunner({ exam }: { exam: Exam }) {
               index={i}
               selected={answers[q.id] ?? null}
               revealed={!!graded}
+              reviewNote={!!graded}
               onSelect={(choice) => setAnswers((a) => ({ ...a, [q.id]: choice }))}
             />
           ))}
@@ -147,7 +163,11 @@ export function ExamRunner({ exam }: { exam: Exam }) {
           <span className="text-sm text-ink-2">
             選択問題 {answeredCount}/{exam.quiz.length}・演習 {exNow}/{exMax} 点
           </span>
-          <button type="button" onClick={grade} className="rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-white hover:bg-accent-strong">
+          <button
+            type="button"
+            onClick={grade}
+            className="rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-white hover:bg-accent-strong"
+          >
             採点する
           </button>
         </div>

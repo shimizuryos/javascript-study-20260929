@@ -41,7 +41,12 @@ const filterParsers = {
   page: parseAsInteger.withDefault(1),
 };
 
-type Row = ExerciseSummary & { level: Level; dayTitle: string; status: (typeof STATUSES)[number]; kind: (typeof KINDS)[number] };
+type Row = ExerciseSummary & {
+  level: Level;
+  dayTitle: string;
+  status: (typeof STATUSES)[number];
+  kind: (typeof KINDS)[number];
+};
 
 const col = createColumnHelper<Row>();
 const columns = [
@@ -81,12 +86,20 @@ const columns = [
           <CheckIcon /> クリア
         </span>
       ) : (
-        <span className={info.getValue() === 'tried' ? 'text-warn' : 'text-ink-3'}>{STATUS_LABEL[info.getValue()]}</span>
+        <span className={info.getValue() === 'tried' ? 'text-warn' : 'text-ink-3'}>
+          {STATUS_LABEL[info.getValue()]}
+        </span>
       ),
   }),
 ];
 
-export function ExercisesTable({ exercises, days }: { exercises: ExerciseSummary[]; days: { day: number; level: Level; title: string }[] }) {
+export function ExercisesTable({
+  exercises,
+  days,
+}: {
+  exercises: ExerciseSummary[];
+  days: { day: number; level: Level; title: string }[];
+}) {
   const progress = useProgress();
   const [{ level, status, kind, q, page }, setFilters] = useQueryStates(filterParsers);
 
@@ -134,7 +147,8 @@ export function ExercisesTable({ exercises, days }: { exercises: ExerciseSummary
   return (
     <div className="space-y-4">
       <p className="text-sm text-ink-2">
-        全 {rows.length} 問中 <strong className="text-ink">{passedCount}</strong> 問クリア。条件は URL に保存されるので、ブックマークや共有もできます。
+        全 {rows.length} 問中 <strong className="text-ink">{passedCount}</strong> 問クリア。条件は URL
+        に保存されるので、ブックマークや共有もできます。
       </p>
       <div className="flex flex-wrap items-end gap-2">
         <label className="flex flex-col gap-1 text-xs text-ink-2">

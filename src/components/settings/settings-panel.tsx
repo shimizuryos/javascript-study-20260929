@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { listDrafts, progressActions, restoreDrafts, useProgress, useProgressReady } from '@/lib/progress/store';
+import {
+  listDrafts,
+  markExported,
+  progressActions,
+  restoreDrafts,
+  useProgress,
+  useProgressReady,
+} from '@/lib/progress/store';
 import type { Progress } from '@/lib/progress/types';
 import { todayKey } from '@/lib/dates';
 import { Card } from '@/components/ui';
@@ -69,6 +76,7 @@ export function SettingsPanel() {
     a.download = `js-study-progress-${todayKey()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    markExported();
     setMessage('進捗をファイルに書き出しました。');
   };
 
@@ -125,7 +133,8 @@ export function SettingsPanel() {
       <Card>
         <h2 className="font-bold">進捗のエクスポート / インポート</h2>
         <p className="mt-1 text-sm text-ink-2">
-          進捗と書きかけのコードは、このブラウザの localStorage にだけ保存されています。別の端末・ブラウザで続けるときや、ブラウザのデータを消す前に書き出しておきましょう。
+          進捗と書きかけのコードは、このブラウザの localStorage
+          にだけ保存されています。別の端末・ブラウザで続けるときや、ブラウザのデータを消す前に書き出しておきましょう。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
@@ -135,7 +144,11 @@ export function SettingsPanel() {
           >
             ファイルに書き出す
           </button>
-          <button type="button" onClick={() => fileRef.current?.click()} className="rounded-lg border border-line px-4 py-2 text-sm hover:bg-muted">
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="rounded-lg border border-line px-4 py-2 text-sm hover:bg-muted"
+          >
             ファイルから読み込む
           </button>
           <input
@@ -154,7 +167,9 @@ export function SettingsPanel() {
 
       <Card>
         <h2 className="font-bold text-bad">進捗をリセット</h2>
-        <p className="mt-1 text-sm text-ink-2">すべての進捗 (クイズ・演習・試験・復習・学習記録) を消します。元に戻せません。</p>
+        <p className="mt-1 text-sm text-ink-2">
+          すべての進捗 (クイズ・演習・試験・復習・学習記録) を消します。元に戻せません。
+        </p>
         <button
           type="button"
           onClick={() => {

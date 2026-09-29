@@ -45,7 +45,7 @@ app/
 ├─ page.tsx                 … /
 ├─ users/
 │  ├─ page.tsx              … /users
-│  ├─ user-table.tsx        … page ではないので URL にならない (置いておくだけ)
+│  ├─ users-table.tsx       … page ではないので URL にならない (置いておくだけ)
 │  └─ [id]/
 │     └─ page.tsx           … /users/1, /users/abc, ...
 ├─ docs/
@@ -56,7 +56,7 @@ app/
 ```
 
 - **フォルダ** が URL の 1 区切り (セグメント) になり、**`page.tsx`** を置いたフォルダだけが実際に開けるページになります。
-- `page.tsx` 以外のファイル (`user-table.tsx` など) を同じフォルダに置いても URL にはなりません。関連ファイルをページの近くにまとめて置けます。
+- `page.tsx` 以外のファイル (`users-table.tsx` など) を同じフォルダに置いても URL にはなりません。関連ファイルをページの近くにまとめて置けます。
 
 ### 動的セグメント `[id]` と params
 

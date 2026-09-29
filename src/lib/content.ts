@@ -37,7 +37,12 @@ const dayDirName = (day: number) => `day${String(day).padStart(2, '0')}`;
 // クイズ (quiz.md) のパース
 // ---------------------------------------------------------------------------
 
-export type RawQuizQuestion = { id: string; prompt: string; options: { text: string; correct: boolean }[]; explanation: string };
+export type RawQuizQuestion = {
+  id: string;
+  prompt: string;
+  options: { text: string; correct: boolean }[];
+  explanation: string;
+};
 
 /**
  * ## question-id
@@ -63,7 +68,8 @@ export function parseQuiz(markdown: string, source: string): RawQuizQuestion[] {
   }
   const ids = new Set<string>();
   for (const s of sections) {
-    if (!/^[a-z0-9][a-z0-9-]*$/.test(s.id)) throw new Error(`${source}: 問題 ID "${s.id}" は英小文字・数字・ハイフンで書いてください`);
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(s.id))
+      throw new Error(`${source}: 問題 ID "${s.id}" は英小文字・数字・ハイフンで書いてください`);
     if (ids.has(s.id)) throw new Error(`${source}: 問題 ID "${s.id}" が重複しています`);
     ids.add(s.id);
     const prompt: string[] = [];
@@ -86,7 +92,8 @@ export function parseQuiz(markdown: string, source: string): RawQuizQuestion[] {
       }
     }
     if (options.length < 2) throw new Error(`${source} (${s.id}): 選択肢は 2 つ以上必要です`);
-    if (options.filter((o) => o.correct).length !== 1) throw new Error(`${source} (${s.id}): 正解 (- [x]) はちょうど 1 つにしてください`);
+    if (options.filter((o) => o.correct).length !== 1)
+      throw new Error(`${source} (${s.id}): 正解 (- [x]) はちょうど 1 つにしてください`);
     if (explanation.join('').trim() === '') throw new Error(`${source} (${s.id}): 解説 (> ...) がありません`);
     questions.push({ id: s.id, prompt: prompt.join('\n').trim(), options, explanation: explanation.join('\n').trim() });
   }
@@ -100,7 +107,9 @@ async function loadQuiz(file: string, idPrefix: string): Promise<QuizQuestion[]>
     raw.map(async (q) => ({
       id: `${idPrefix}:${q.id}`,
       promptHtml: await renderMarkdown(q.prompt),
-      options: await Promise.all(q.options.map(async (o) => ({ html: await renderInlineMarkdown(o.text), correct: o.correct }))),
+      options: await Promise.all(
+        q.options.map(async (o) => ({ html: await renderInlineMarkdown(o.text), correct: o.correct })),
+      ),
       explanationHtml: await renderMarkdown(q.explanation),
     })),
   );
@@ -159,7 +168,8 @@ export function readExercise(dir: string, day: number, exam: boolean): RawExerci
     .readdirSync(dir)
     .filter((f) => /\.tsx?$/.test(f) && !/\.d\.ts$/.test(f) && ![main, starter, test].includes(f))
     .sort();
-  if (meta.preview && !support.includes(meta.preview)) throw new Error(`${rel}: preview に指定した ${meta.preview} がありません`);
+  if (meta.preview && !support.includes(meta.preview))
+    throw new Error(`${rel}: preview に指定した ${meta.preview} がありません`);
   const dayDir = dayDirName(day);
   const id = exam ? `${dayDir}/exam/${slug}` : `${dayDir}/${slug}`;
   return {
@@ -381,7 +391,8 @@ export async function getAllQuizQuestions(): Promise<(QuizQuestion & { day: numb
   const out: (QuizQuestion & { day: number; source: string })[] = [];
   for (const day of listDayNumbers()) {
     const dir = path.join(DAYS_DIR, dayDirName(day));
-    for (const q of await loadQuiz(path.join(dir, 'quiz.md'), dayDirName(day))) out.push({ ...q, day, source: `Day ${day} クイズ` });
+    for (const q of await loadQuiz(path.join(dir, 'quiz.md'), dayDirName(day)))
+      out.push({ ...q, day, source: `Day ${day} クイズ` });
     for (const q of await loadQuiz(path.join(dir, 'exam', 'quiz.md'), `${dayDirName(day)}/exam`)) {
       out.push({ ...q, day, source: `Day ${day} 試験` });
     }

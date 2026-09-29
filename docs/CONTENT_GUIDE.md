@@ -109,6 +109,7 @@ import できるモジュール (これ以外は import できない):
 | `@testing-library/react` | 本物。`render` `screen` `renderHook` `act` `waitFor` `within` `fireEvent` |
 | `@testing-library/user-event` | 本物。`userEvent.setup()` / `await userEvent.click(...)` |
 | `nuqs`, `nuqs/adapters/testing` | 本物。テストでは `NuqsTestingAdapter` で囲む |
+| `nuqs/adapters/next/app` | **モック**。`NuqsAdapter` が URL をメモリ上に持つ `NuqsTestingAdapter` になる (providers.tsx の演習用) |
 | `@tanstack/react-query` | 本物 (v5)。テストごとに `new QueryClient({ defaultOptions: { queries: { retry: false } } })` |
 | `@tanstack/react-table` | 本物 (v8) |
 | `next/navigation`, `next/link` | **モック**。`useRouter` `useSearchParams` `usePathname` `Link` がメモリ上の URL で動く |
@@ -117,6 +118,8 @@ import できるモジュール (これ以外は import できない):
 
 - 実行環境は Vitest + jsdom 相当 (ブラウザ上の iframe、CI では jsdom)。React は開発ビルドなので `act` が使え、key の警告なども学習者に表示される。
 - 各テストの後に `cleanup()` (画面の片付け) と `mockRouter.reset()` が自動で走る。
+- サンドボックス内で素の `<a href>` をクリックしてもページ遷移はしない (`next/link` のモックは mockRouter の URL を変える)。
+- `expect(promise).rejects.toThrow('msg')` も使える。
 - 非同期の表示は `await screen.findByText(...)` か `await waitFor(() => ...)` で待つ。
 - 疑似 API は補助ファイル (`api.ts`) に書き、`await new Promise((r) => setTimeout(r, 10))` 程度の短い遅延にする (テストのタイムアウトは 5 秒)。
 - Next.js の Server Component は「async 関数コンポーネント」として直接呼んでテストできる: `render(await Page({ params: Promise.resolve({ id: '1' }) }))`。
@@ -126,7 +129,7 @@ import できるモジュール (これ以外は import できない):
 
 TypeScript の型そのものを答える演習。ブラウザ内で TypeScript コンパイラが動き、**型エラー 0 件** かつテスト (あれば) 合格で正解。
 
-- `main.ts` / `test.ts` とも **外部モジュールを import しない** (標準ライブラリ ES2022 のみ)。
+- `main.ts` / `test.ts` とも **外部モジュールを import しない** (標準ライブラリ ES2022 + `console` / `setTimeout` / `clearTimeout` のみ。DOM の型は無い)。
 - テストでは type-challenges と同じヘルパーがグローバルに使える:
 
 ```ts

@@ -10,11 +10,13 @@ type Props = {
   revealed: boolean;
   onSelect: (choice: number) => void;
   disabled?: boolean;
+  /** 不正解のとき「復習キューに入った」ことを表示する */
+  reviewNote?: boolean;
 };
 
 const MARKS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-export function QuestionCard({ question, index, selected, revealed, onSelect, disabled }: Props) {
+export function QuestionCard({ question, index, selected, revealed, onSelect, disabled, reviewNote }: Props) {
   const correctIndex = question.options.findIndex((o) => o.correct);
   const isCorrect = selected === correctIndex;
   return (
@@ -50,7 +52,9 @@ export function QuestionCard({ question, index, selected, revealed, onSelect, di
               </span>
               <span className="prose min-w-0 flex-1" dangerouslySetInnerHTML={{ __html: o.html }} />
               {revealed && i === correctIndex && <span className="shrink-0 text-xs font-semibold text-good">正解</span>}
-              {revealed && chosen && i !== correctIndex && <span className="shrink-0 text-xs font-semibold text-bad">あなたの回答</span>}
+              {revealed && chosen && i !== correctIndex && (
+                <span className="shrink-0 text-xs font-semibold text-bad">あなたの回答</span>
+              )}
             </button>
           );
         })}
@@ -62,6 +66,11 @@ export function QuestionCard({ question, index, selected, revealed, onSelect, di
         >
           <p className="mb-1 font-bold">{selected === null ? '未回答' : isCorrect ? '正解!' : '不正解'}</p>
           <div className="prose prose-compact" dangerouslySetInnerHTML={{ __html: question.explanationHtml }} />
+          {reviewNote && !isCorrect && (
+            <p className="mt-2 text-xs text-ink-2">
+              → この問題は「復習」に入りました。明日・3 日後・7 日後にもう一度出題されます。
+            </p>
+          )}
         </div>
       )}
     </fieldset>

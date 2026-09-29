@@ -4,7 +4,9 @@ import { answers } from './main';
 const same = (answer: unknown, actual: unknown) =>
   typeof answer === typeof actual &&
   JSON.stringify(answer) === JSON.stringify(actual) &&
-  (typeof actual !== 'object' || actual === null || Object.keys(answer as object).join() === Object.keys(actual).join());
+  (typeof actual !== 'object' ||
+    actual === null ||
+    Object.keys(answer as object).join() === Object.keys(actual).join());
 
 type Res = {
   data?: { items: string[]; total: number };

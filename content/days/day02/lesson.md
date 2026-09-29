@@ -209,7 +209,7 @@ const nameById = Object.fromEntries(users.map((u) => [u.id, u.name]));
 `a?.b` は「`a` が `null` か `undefined` なら、エラーにせず `undefined` を返す。そうでなければ `a.b`」です。
 
 ```ts
-const query = { data: undefined as { items: string[] } | undefined };
+const query: { data?: { items: string[] } } = {}; // data がまだ無い状態
 
 query.data.items; // 実行すると TypeError (TypeScript なら書いた時点で型エラー)
 query.data?.items; // undefined (エラーにならない)

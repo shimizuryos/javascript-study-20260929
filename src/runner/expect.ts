@@ -358,8 +358,7 @@ const matchers: Record<string, (this: Ctx, received: unknown, ...args: never[]) 
     let cur: unknown = received;
     let found = true;
     for (const k of keys) {
-      if (cur !== null && cur !== undefined && Object.prototype.hasOwnProperty.call(Object(cur), k))
-        cur = (cur as Record<string, unknown>)[k];
+      if (cur !== null && cur !== undefined && k in Object(cur)) cur = (cur as Record<string, unknown>)[k];
       else {
         found = false;
         break;
@@ -566,7 +565,14 @@ function buildAsync(promise: unknown, mode: 'resolves' | 'rejects', not: boolean
           );
         value = e;
       }
-      buildMatchers(value, not)[name](...args);
+      // expect(promise).rejects.toThrow('msg') は「reject された値を投げる関数」として検査する (Vitest と同じ)
+      const subject =
+        mode === 'rejects' && name === 'toThrow'
+          ? () => {
+              throw value;
+            }
+          : value;
+      buildMatchers(subject, not)[name](...args);
     };
   }
   return out;

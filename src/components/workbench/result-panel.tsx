@@ -17,6 +17,32 @@ function XIcon() {
   );
 }
 
+const WARNING_HINTS: [RegExp, string][] = [
+  [/unique "key" prop/, 'リストの各要素に key が必要です (Day 5)。'],
+  [
+    /uncontrolled input to be controlled|controlled input to be uncontrolled/,
+    'input の value が undefined と値の間で切り替わっています (Day 6)。',
+  ],
+  [
+    /Cannot update a component .* while rendering a different component/,
+    'レンダー中に別のコンポーネントの state を更新しています (Day 6・7)。',
+  ],
+  [
+    /cannot be a descendant of|cannot contain a nested|validateDOMNesting|In HTML, <\w+> cannot/,
+    'HTML の入れ子のルールに反しています (例: <p> の中に <div>)。hydration エラーの原因になります (Day 10)。',
+  ],
+  [/not wrapped in act/, 'テストの外で state が更新されました。多くの場合 findBy / waitFor で待てば解消します。'],
+  [
+    /Maximum update depth exceeded/,
+    '再レンダーが止まりません。useEffect の依存配列や、レンダー中の setState を確認しましょう (Day 7)。',
+  ],
+  [/Invalid DOM property|non-boolean attribute/, 'JSX の属性名が HTML と違います (例: class ではなく className)。'],
+  [
+    /Functions are not valid as a React child/,
+    '関数をそのまま JSX に書いています。呼び出し忘れ (fn()) か、<Component /> の書き忘れかもしれません。',
+  ],
+];
+
 const PHASE_LABEL: Record<RunError['phase'], string> = {
   compile: '構文エラー',
   load: 'コードの読み込み中にエラー',
@@ -51,7 +77,11 @@ export function ResultPanel({
     <div className="space-y-3" aria-live="polite">
       <div
         className={`flex items-center gap-2 rounded-lg p-3 text-sm font-semibold ${
-          allPassed ? 'bg-good-soft text-good' : result.status === 'error' ? 'bg-warn-soft text-warn' : 'bg-bad-soft text-bad'
+          allPassed
+            ? 'bg-good-soft text-good'
+            : result.status === 'error'
+              ? 'bg-warn-soft text-warn'
+              : 'bg-bad-soft text-bad'
         }`}
       >
         {allPassed ? <CheckIcon /> : <XIcon />}
@@ -135,13 +165,20 @@ export function ResultPanel({
       )}
       {warnings.length > 0 && (
         <details className="rounded-lg border border-line p-3 text-sm">
-          <summary className="cursor-pointer font-semibold text-warn">React などからの警告 ({warnings.length})</summary>
-          <ul className="mt-2 space-y-2">
-            {warnings.map((l, i) => (
-              <li key={i} className="font-mono text-xs whitespace-pre-wrap">
-                {l.text}
-              </li>
-            ))}
+          <summary className="cursor-pointer font-semibold text-warn">
+            React などからの警告 ({warnings.length})
+            <span className="ml-2 text-xs font-normal text-ink-3">合格判定には影響しません</span>
+          </summary>
+          <ul className="mt-2 space-y-3">
+            {warnings.map((l, i) => {
+              const hint = WARNING_HINTS.find(([re]) => re.test(l.text))?.[1];
+              return (
+                <li key={i}>
+                  {hint && <p className="mb-1 text-xs font-semibold">{hint}</p>}
+                  <p className="font-mono text-xs whitespace-pre-wrap text-ink-2">{l.text}</p>
+                </li>
+              );
+            })}
           </ul>
         </details>
       )}

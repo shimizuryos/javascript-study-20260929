@@ -36,8 +36,7 @@ export function dayProgress(meta: DayMeta, p: Progress): DayProgress {
   const examPassed = meta.exam ? !!exam?.passedAt : null;
   const done = (lessonRead ? 1 : 0) + answered.length + requiredPassed + (examPassed ? 1 : 0);
   const total = 1 + meta.quizIds.length + required.length + (meta.exam ? 1 : 0);
-  const touched =
-    done > 0 || meta.exercises.some((e) => p.exercises[e.id]) || (meta.exam ? !!exam : false);
+  const touched = done > 0 || meta.exercises.some((e) => p.exercises[e.id]) || (meta.exam ? !!exam : false);
   return {
     day: meta.day,
     lessonRead,

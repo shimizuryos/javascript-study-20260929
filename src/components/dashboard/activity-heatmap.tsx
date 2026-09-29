@@ -22,7 +22,9 @@ export function ActivityHeatmap({ activity, frozen }: { activity: Record<string,
   const [hover, setHover] = useState<string | null>(null);
   const frozenSet = new Set(frozen);
 
-  const columns = Array.from({ length: WEEKS }, (_, w) => Array.from({ length: 7 }, (_, d) => addDays(start, w * 7 + d)));
+  const columns = Array.from({ length: WEEKS }, (_, w) =>
+    Array.from({ length: 7 }, (_, d) => addDays(start, w * 7 + d)),
+  );
   const hoverCount = hover ? (activity[hover] ?? 0) : 0;
 
   return (
@@ -66,7 +68,8 @@ export function ActivityHeatmap({ activity, frozen }: { activity: Record<string,
         <span aria-live="polite">
           {hover ? (
             <>
-              <span className="text-ink">{formatJa(hover)}</span>・{hoverCount} 回{frozenSet.has(hover) ? '・フリーズで継続' : ''}
+              <span className="text-ink">{formatJa(hover)}</span>・{hoverCount} 回
+              {frozenSet.has(hover) ? '・フリーズで継続' : ''}
             </>
           ) : (
             '1 マス = 1 日 (レッスン・クイズ・演習の実行回数)'

@@ -56,6 +56,7 @@ describe('content structure', () => {
       expect(s.to).toBeLessThanOrEqual(lineCount);
       expect(s.from).toBeLessThanOrEqual(s.to);
       expect(known.has(s.day), `segment day ${s.day} exists`).toBe(true);
+      for (const d of s.also ?? []) expect(d).toBeLessThan(s.day);
     }
   });
 });

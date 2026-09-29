@@ -13,6 +13,7 @@ const options = {
   minify: true,
   keepNames: true,
   legalComments: 'none',
+  jsx: 'automatic',
   define: { 'process.env.NODE_ENV': '"development"' },
   alias: { '@': path.resolve('src') },
   logLevel: 'info',

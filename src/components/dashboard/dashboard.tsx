@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import type { DayMeta, TargetCode } from '@/content/types';
 import { LEVELS } from '@/content/types';
-import { useProgress, useProgressReady } from '@/lib/progress/store';
+import { useExportedAt, useProgress, useProgressReady } from '@/lib/progress/store';
 import { dueReviewIds, overview, plannedDay, streak } from '@/lib/progress/selectors';
 import { useToday } from '@/lib/use-today';
 import { Card, LevelDot, Meter } from '@/components/ui';
@@ -34,6 +34,7 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
   const next = ov.nextDay ? metas.find((m) => m.day === ov.nextDay) : null;
   const nextProgress = next ? ov.days.find((d) => d.day === next.day) : null;
   const started = Object.keys(progress.activity).length > 0;
+  const exportedAt = useExportedAt();
 
   return (
     <div className={`space-y-6 transition-opacity ${ready ? 'opacity-100' : 'opacity-0'}`}>
@@ -48,6 +49,21 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
                 {started ? '次は' : 'まずは'} Day {next.day}「{next.title}」
               </h1>
               <p className="mt-2 text-sm text-ink-2">{next.summary}</p>
+              {nextProgress && nextProgress.done > 0 && (
+                <ul
+                  className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-2"
+                  aria-label={`Day ${next.day} の残り`}
+                >
+                  <li>レッスン {nextProgress.lessonRead ? '✓' : '未読'}</li>
+                  <li>
+                    クイズ {nextProgress.quizAnswered}/{nextProgress.quizTotal}
+                  </li>
+                  <li>
+                    必須演習 {nextProgress.requiredPassed}/{nextProgress.requiredTotal}
+                  </li>
+                  {next.exam && <li>試験 {nextProgress.examPassed ? '合格' : '未合格'}</li>}
+                </ul>
+              )}
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Link
                   href={`/days/${next.day}/`}
@@ -56,8 +72,18 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
                   {nextProgress && nextProgress.done > 0 ? '続きから' : '始める'} →
                 </Link>
                 <span className="text-xs text-ink-3">目安 {next.minutes} 分</span>
+                {due > 0 && (
+                  <Link
+                    href="/review/"
+                    className="text-xs font-semibold text-accent-strong underline underline-offset-2"
+                  >
+                    先に復習 {due} 問 (約 {Math.max(1, Math.round(due * 0.7))} 分)
+                  </Link>
+                )}
                 {planned !== null && planned > next.day && (
-                  <span className="text-xs text-warn">予定より {planned - next.day} 日遅れています (焦らなくて大丈夫)</span>
+                  <span className="text-xs text-warn">
+                    予定より {planned - next.day} 日遅れています (焦らなくて大丈夫)
+                  </span>
                 )}
               </div>
             </>
@@ -86,9 +112,22 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
         <StatTile
           label="連続学習"
           value={`${st.count} 日`}
-          sub={st.studiedToday ? '今日も学習済み' : st.count > 0 ? '今日学習すると継続' : '今日から始めよう'}
+          sub={`${st.studiedToday ? '今日も学習済み' : st.count > 0 ? '今日学習すると継続' : '今日から始めよう'}・週 1 日はお休み OK`}
         />
       </section>
+
+      {ov.daysDone >= 3 && exportedAt === null && (
+        <Link
+          href="/settings/"
+          className="flex items-center justify-between gap-3 rounded-xl border border-warn bg-warn-soft p-4 text-sm"
+        >
+          <span>
+            <strong>進捗をバックアップしましょう。</strong>
+            進捗はこのブラウザにだけ保存されています。ブラウザのデータを消すと失われます。
+          </span>
+          <span className="shrink-0 font-semibold">設定へ →</span>
+        </Link>
+      )}
 
       {due > 0 && (
         <Link
@@ -118,9 +157,15 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
                       <LevelDot level={level} />
                       {LEVELS[level].name}
                     </span>
-                    <span className="text-xs text-ink-2 tabular-nums">{total ? Math.round((done / total) * 100) : 0}%</span>
+                    <span className="text-xs text-ink-2 tabular-nums">
+                      {total ? Math.round((done / total) * 100) : 0}%
+                    </span>
                   </div>
-                  <Meter value={total ? done / total : 0} color={`var(--level-${level})`} label={`Level ${level} の進捗`} />
+                  <Meter
+                    value={total ? done / total : 0}
+                    color={`var(--level-${level})`}
+                    label={`Level ${level} の進捗`}
+                  />
                 </li>
               ))}
             </ul>

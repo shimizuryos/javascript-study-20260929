@@ -178,3 +178,46 @@ test('search', async () => {
     expect(r.tests[0]).toMatchObject({ status: 'passed' });
   });
 });
+
+describe('runner fixes', () => {
+  it('supports rejects.toThrow and inherited toHaveProperty', async () => {
+    const r = await run({
+      'main.ts': "export const fail = async () => { throw new Error('boom'); };",
+      'test.ts': `import { fail } from './main';
+test('rejects', async () => { await expect(fail()).rejects.toThrow('boom'); });
+test('inherited', () => { class A { get x() { return 1; } } expect(new A()).toHaveProperty('x', 1); });`,
+    });
+    expect(r.tests.map((t) => t.status)).toEqual(['passed', 'passed']);
+  });
+
+  it('provides a nuqs next/app adapter mock', async () => {
+    const r = await run(
+      {
+        'main.tsx': `import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { useQueryState, parseAsInteger } from 'nuqs';
+function Page() { const [n, setN] = useQueryState('n', parseAsInteger.withDefault(0)); return <button onClick={() => setN(n + 1)}>{n}</button>; }
+export function App() { return <NuqsAdapter><Page /></NuqsAdapter>; }`,
+        'test.tsx': `import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { App } from './main';
+test('adapter', async () => { render(<App />); await userEvent.click(screen.getByRole('button')); expect(screen.getByRole('button')).toHaveTextContent('1'); });`,
+      },
+      'test.tsx',
+    );
+    expect(r.tests[0]).toMatchObject({ status: 'passed' });
+  });
+
+  it('DOM errors are translated and have no ANSI color codes', async () => {
+    const r = await run(
+      {
+        'main.tsx': 'export const X = () => <p>hi</p>;',
+        'test.tsx': `import { render, screen } from '@testing-library/react';
+import { X } from './main';
+test('missing', () => { render(<X />); screen.getByRole('button'); });`,
+      },
+      'test.tsx',
+    );
+    expect(r.tests[0].error).toContain('role="button"');
+    expect(r.tests[0].error).not.toContain('\\u001b[');
+  });
+});

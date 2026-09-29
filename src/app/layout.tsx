@@ -3,7 +3,8 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: { default: '読めるNext.js — 14日間トレーニング', template: '%s | 読めるNext.js' },
-  description: 'JavaScript / TypeScript から React、Next.js、nuqs・TanStack Query・TanStack Table までを 14 日で「読める」ようにする学習アプリ。',
+  description:
+    'JavaScript / TypeScript から React、Next.js、nuqs・TanStack Query・TanStack Table までを 14 日で「読める」ようにする学習アプリ。',
 };
 
 export const viewport: Viewport = {

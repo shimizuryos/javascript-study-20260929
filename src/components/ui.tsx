@@ -31,7 +31,9 @@ const TONES: Record<BadgeTone, string> = {
 
 export function Badge({ tone = 'neutral', children }: { tone?: BadgeTone; children: React.ReactNode }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${TONES[tone]}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${TONES[tone]}`}
+    >
       {children}
     </span>
   );
@@ -60,7 +62,10 @@ export function Meter({
       className={`h-2 w-full overflow-hidden rounded-full ${className}`}
       style={{ backgroundColor: `color-mix(in srgb, ${color} 18%, transparent)` }}
     >
-      <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
+      <div
+        className="h-full rounded-full transition-[width] duration-500"
+        style={{ width: `${pct}%`, backgroundColor: color }}
+      />
     </div>
   );
 }

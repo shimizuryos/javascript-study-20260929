@@ -11,6 +11,7 @@ import { EMPTY_PROGRESS, type Progress, type ReviewCard } from './types';
 
 const KEY = 'js-study:progress:v1';
 const DRAFT_PREFIX = 'js-study:draft:';
+const EXPORTED_KEY = 'js-study:exported-at';
 
 let state: Progress = EMPTY_PROGRESS;
 let loaded = false;
@@ -226,7 +227,8 @@ export function listDrafts(): Record<string, string> {
   try {
     for (let i = 0; i < window.localStorage.length; i++) {
       const key = window.localStorage.key(i);
-      if (key?.startsWith(DRAFT_PREFIX)) drafts[key.slice(DRAFT_PREFIX.length)] = window.localStorage.getItem(key) ?? '';
+      if (key?.startsWith(DRAFT_PREFIX))
+        drafts[key.slice(DRAFT_PREFIX.length)] = window.localStorage.getItem(key) ?? '';
     }
   } catch {
     // 無視
@@ -236,4 +238,29 @@ export function listDrafts(): Record<string, string> {
 
 export function restoreDrafts(drafts: Record<string, string>) {
   for (const [id, code] of Object.entries(drafts)) saveDraft(id, code);
+}
+
+// ---------------------------------------------------------------------------
+// 最後にエクスポートした日時 (バックアップを促すため)
+// ---------------------------------------------------------------------------
+
+const exportListeners = new Set<() => void>();
+
+export function markExported() {
+  safeSet(EXPORTED_KEY, new Date().toISOString());
+  exportListeners.forEach((l) => l());
+}
+
+function subscribeExported(listener: () => void) {
+  exportListeners.add(listener);
+  return () => exportListeners.delete(listener);
+}
+
+/** まだ一度もエクスポートしていなければ null (サーバー描画中は 'unknown') */
+export function useExportedAt(): string | null {
+  return useSyncExternalStore(
+    subscribeExported,
+    () => safeGet(EXPORTED_KEY),
+    () => 'unknown',
+  );
 }

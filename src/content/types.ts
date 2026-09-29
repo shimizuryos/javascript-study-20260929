@@ -73,7 +73,14 @@ export type DayMeta = {
   readings: Reading[];
   quizIds: string[];
   exercises: ExerciseSummary[];
-  exam?: { id: string; title: string; level: Level; passScore: number; quizIds: string[]; exercises: ExerciseSummary[] };
+  exam?: {
+    id: string;
+    title: string;
+    level: Level;
+    passScore: number;
+    quizIds: string[];
+    exercises: ExerciseSummary[];
+  };
 };
 
 export type Day = DayMeta & {
@@ -82,7 +89,8 @@ export type Day = DayMeta & {
   quiz: QuizQuestion[];
 };
 
-export type TargetSegment = { from: number; to: number; day: number; note: string };
+/** day: この行が「全部読める」ようになる日 / also: この行に登場する、それより前の日の文法 */
+export type TargetSegment = { from: number; to: number; day: number; note: string; also?: number[] };
 
 export type TargetCode = {
   fileName: string;

@@ -39,7 +39,8 @@ export function ReviewSession({ questions }: { questions: Q[] }) {
           <p className="text-sm text-ink-2">今日の復習</p>
           <p className="text-4xl font-bold tabular-nums">{due.length} 問</p>
           <p className="mt-2 text-sm text-ink-2">
-            クイズや試験で間違えた問題が、1 日後 → 3 日後 → 7 日後と間隔をあけて出題されます。3 回続けて正解すると「卒業」です。
+            クイズや試験で間違えた問題が、1 日後 → 3 日後 → 7 日後と間隔をあけて出題されます。3
+            回続けて正解すると「卒業」です。
           </p>
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
             {upcoming.map((u) => (

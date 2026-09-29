@@ -42,6 +42,7 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const controllerRef = useRef<SandboxController | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   // 書きかけのコードを復元する (localStorage はブラウザでしか読めないので effect の中で)
   useEffect(() => {
@@ -52,7 +53,9 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
 
   useEffect(() => {
     if (!iframeRef.current) return;
-    const controller = new SandboxController(iframeRef.current, (h) => setPreviewHeight(Math.min(Math.max(h, 120), 640)));
+    const controller = new SandboxController(iframeRef.current, (h) =>
+      setPreviewHeight(Math.min(Math.max(h, 120), 640)),
+    );
     controllerRef.current = controller;
     return () => controller.dispose();
   }, []);
@@ -93,7 +96,7 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
         setTypecheckState({ status: 'error', message: types.error });
         typeOk = false;
       } else {
-        const diagnostics = (types.diagnostics ?? []).filter((d) => d.file !== 'test-globals.d.ts');
+        const diagnostics = (types.diagnostics ?? []).filter((d) => !d.file?.endsWith('.d.ts'));
         setTypecheckState({ status: 'done', diagnostics });
         typeOk = diagnostics.length === 0;
       }
@@ -104,6 +107,10 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
     if (runResult.error?.phase !== 'sandbox') progressActions.recordRun(exercise.id, ok);
     setJustPassed(ok);
     setRunning(false);
+    // スマホでは結果がエディタの下 (画面外) になるので、結果までスクロールする
+    if (window.innerWidth < 1024) {
+      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
   }, [code, exercise, running]);
 
   const reveal = () => {
@@ -133,7 +140,7 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
   ];
   const current = tabs.find((t) => t.name === tab) ?? tabs[0];
   const readOnlyCode =
-    current.kind === 'solution' ? exercise.solution : exercise.files.find((f) => f.name === current.name)?.code ?? '';
+    current.kind === 'solution' ? exercise.solution : (exercise.files.find((f) => f.name === current.name)?.code ?? '');
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -145,7 +152,13 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
         </nav>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-1">
-            {exercise.exam ? <Badge tone="warn">試験</Badge> : exercise.optional ? <Badge>任意</Badge> : <Badge tone="accent">必須</Badge>}
+            {exercise.exam ? (
+              <Badge tone="warn">試験</Badge>
+            ) : exercise.optional ? (
+              <Badge>任意</Badge>
+            ) : (
+              <Badge tone="accent">必須</Badge>
+            )}
             {exercise.typecheck && <Badge>型チェックあり</Badge>}
             {passed && (
               <Badge tone="good">
@@ -179,12 +192,20 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
 
         <div className="flex flex-wrap gap-2 border-t border-line pt-4">
           {!(revealed || passed) && (
-            <button type="button" onClick={reveal} className="rounded-md px-3 py-1.5 text-sm text-ink-2 underline underline-offset-2 hover:text-ink">
+            <button
+              type="button"
+              onClick={reveal}
+              className="rounded-md px-3 py-1.5 text-sm text-ink-2 underline underline-offset-2 hover:text-ink"
+            >
               解答を見る
             </button>
           )}
           {(revealed || passed) && (
-            <button type="button" onClick={() => setTab('solution')} className="rounded-md border border-line px-3 py-1.5 text-sm hover:bg-muted">
+            <button
+              type="button"
+              onClick={() => setTab('solution')}
+              className="rounded-md border border-line px-3 py-1.5 text-sm hover:bg-muted"
+            >
               模範解答と比べる
             </button>
           )}
@@ -215,7 +236,11 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
               ))}
             </div>
             <div className="flex items-center gap-1">
-              <button type="button" onClick={reset} className="rounded-md px-2 py-1 text-xs text-ink-2 hover:bg-card hover:text-ink">
+              <button
+                type="button"
+                onClick={reset}
+                className="rounded-md px-2 py-1 text-xs text-ink-2 hover:bg-card hover:text-ink"
+              >
                 リセット
               </button>
               <button
@@ -229,9 +254,20 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
             </div>
           </div>
           {current.kind === 'main' ? (
-            <CodeEditor value={code} onChange={onChange} tsx={tsx} onRun={run} label={`${exercise.mainFile} (編集できます)`} />
+            <CodeEditor
+              value={code}
+              onChange={onChange}
+              tsx={tsx}
+              onRun={run}
+              label={`${exercise.mainFile} (編集できます)`}
+            />
           ) : (
-            <CodeEditor value={readOnlyCode} readOnly tsx={/\.tsx$/.test(current.name) || (current.kind === 'solution' && tsx)} label={`${current.name} (読み取り専用)`} />
+            <CodeEditor
+              value={readOnlyCode}
+              readOnly
+              tsx={/\.tsx$/.test(current.name) || (current.kind === 'solution' && tsx)}
+              label={`${current.name} (読み取り専用)`}
+            />
           )}
           {current.kind === 'test' && (
             <p className="border-t border-line px-3 py-2 text-xs text-ink-3">
@@ -255,17 +291,26 @@ export function Workbench({ exercise, nav }: { exercise: Exercise; nav: Workbenc
           </div>
         )}
 
-        <ResultPanel result={result} typecheck={typecheckState} typecheckEnabled={exercise.typecheck} previewError={previewError} />
-
         <div className={exercise.preview ? 'space-y-2' : 'hidden'}>
           <h2 className="text-sm font-bold">プレビュー</h2>
-          <p className="text-xs text-ink-3">実行すると、あなたのコードで作った画面がここに表示されます。操作してみましょう。</p>
+          <p className="text-xs text-ink-3">
+            実行すると、あなたのコードで作った画面がここに表示されます。操作してみましょう。
+          </p>
           <iframe
             ref={iframeRef}
             title="プレビュー (実行環境)"
             src={SANDBOX_URL}
             className="w-full rounded-lg border border-line bg-card"
             style={{ height: previewHeight }}
+          />
+        </div>
+
+        <div ref={resultRef} className="scroll-mt-20">
+          <ResultPanel
+            result={result}
+            typecheck={typecheckState}
+            typecheckEnabled={exercise.typecheck}
+            previewError={previewError}
           />
         </div>
       </div>

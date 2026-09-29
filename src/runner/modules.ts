@@ -14,6 +14,7 @@ import * as ReactQuery from '@tanstack/react-query';
 import * as ReactTable from '@tanstack/react-table';
 import * as TestingLibrary from '@testing-library/react';
 import * as NextMock from './next-mock';
+import * as NuqsNextMock from './nuqs-next-mock';
 
 function esm(ns: object, defaultExport?: unknown): Record<string, unknown> {
   const n = ns as Record<string, unknown>;
@@ -30,6 +31,7 @@ export const libraryModules: Record<string, Record<string, unknown>> = {
   '@testing-library/user-event': esm({ userEvent }, userEvent),
   nuqs: esm(Nuqs),
   'nuqs/adapters/testing': esm(NuqsTesting),
+  'nuqs/adapters/next/app': esm(NuqsNextMock),
   '@tanstack/react-query': esm(ReactQuery),
   '@tanstack/react-table': esm(ReactTable),
   'next/navigation': esm(NextMock),

@@ -39,7 +39,9 @@ export function DayPlan({ metas, days, startDate, today, nextDay }: Props) {
                   {planned && <span className="font-normal text-ink-3">・{formatJa(planned)}</span>}
                 </span>
                 <span className="flex items-center gap-1">
-                  {m.exam && <Badge tone={p.examPassed ? 'good' : 'warn'}>{p.examPassed ? '試験合格' : '試験あり'}</Badge>}
+                  {m.exam && (
+                    <Badge tone={p.examPassed ? 'good' : 'warn'}>{p.examPassed ? '試験合格' : '試験あり'}</Badge>
+                  )}
                   {p.status === 'done' ? (
                     <Badge tone="good">
                       <CheckIcon className="size-3" />
@@ -59,7 +61,9 @@ export function DayPlan({ metas, days, startDate, today, nextDay }: Props) {
                   color={p.status === 'done' ? 'var(--good)' : 'var(--accent)'}
                   label={`Day ${m.day} の進捗`}
                 />
-                <span className="w-9 shrink-0 text-right text-xs text-ink-2 tabular-nums">{Math.round(p.ratio * 100)}%</span>
+                <span className="w-9 shrink-0 text-right text-xs text-ink-2 tabular-nums">
+                  {Math.round(p.ratio * 100)}%
+                </span>
               </div>
             </Link>
           </li>

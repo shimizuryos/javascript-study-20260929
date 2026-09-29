@@ -22,6 +22,12 @@ window.addEventListener('message', async (event: MessageEvent<SandboxRequest>) =
   post({ type: 'result', id, result, previewError });
 });
 
+// 素の <a href> をクリックしても iframe 自体がページ遷移しないようにする
+document.addEventListener('click', (event) => {
+  const anchor = (event.target as Element | null)?.closest?.('a[href]');
+  if (anchor) event.preventDefault();
+});
+
 new ResizeObserver(() => post({ type: 'resize', height: document.documentElement.scrollHeight })).observe(
   document.body,
 );

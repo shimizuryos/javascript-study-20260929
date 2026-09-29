@@ -18,7 +18,7 @@ const EXTENSIONS = ['', '.ts', '.tsx', '.js', '.jsx'];
 
 configureDom({
   getElementError(message, container) {
-    const dump = container ? prettyDOM(container, 2000) : '';
+    const dump = container ? prettyDOM(container, 2000, { highlight: false }) : '';
     const error = new Error(`${translateDomMessage(message ?? '')}${dump ? `\n\n現在の画面:\n${dump}` : ''}`);
     error.name = 'TestingLibraryElementError';
     return error;

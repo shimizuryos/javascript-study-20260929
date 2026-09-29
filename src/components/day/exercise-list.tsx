@@ -35,9 +35,9 @@ export function ExerciseList({ exercises }: { exercises: ExerciseSummary[] }) {
                   {e.optional ? <Badge>任意</Badge> : <Badge tone="accent">必須</Badge>}
                   {e.typecheck && <Badge>型チェック</Badge>}
                   {status === 'tried' && <Badge tone="warn">挑戦中</Badge>}
-                  {status === 'passed' && progress.exercises[e.id]?.revealed && !progress.exercises[e.id]?.passedBeforeReveal && (
-                    <Badge>解答を見た</Badge>
-                  )}
+                  {status === 'passed' &&
+                    progress.exercises[e.id]?.revealed &&
+                    !progress.exercises[e.id]?.passedBeforeReveal && <Badge>解答を見た</Badge>}
                 </span>
               </span>
               <span aria-hidden className="text-ink-3">

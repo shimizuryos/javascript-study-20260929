@@ -30,7 +30,9 @@ export default async function ExamExercisePage({ params }: Props) {
       exercise={exercise}
       nav={{
         back: { href: `/days/${day}/exam/`, label: '試験のページ' },
-        next: next ? { href: `/days/${day}/exam/exercises/${next.slug}/`, label: `次の問題「${next.title}」` } : undefined,
+        next: next
+          ? { href: `/days/${day}/exam/exercises/${next.slug}/`, label: `次の問題「${next.title}」` }
+          : undefined,
       }}
     />
   );

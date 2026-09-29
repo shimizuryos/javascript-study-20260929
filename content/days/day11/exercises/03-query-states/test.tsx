@@ -26,7 +26,11 @@ test("filterParsers のキーは 'scope' / 'page' / 'q' で、パーサーが UR
   expect(parsers.scope.parse('admin')).toBeNull();
   expect(parsers.page.parse('2')).toBe(2);
   expect(parsers.q.parse('react')).toBe('react');
-  expect([parsers.scope.defaultValue, parsers.page.defaultValue, parsers.q.defaultValue]).toEqual(['all', 1, undefined]);
+  expect([parsers.scope.defaultValue, parsers.page.defaultValue, parsers.q.defaultValue]).toEqual([
+    'all',
+    1,
+    undefined,
+  ]);
 });
 
 test('describeFilters: 条件を 1 行の文字列にする', () => {
