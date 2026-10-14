@@ -2,13 +2,14 @@
 
 import type { QuizQuestion } from '@/content/types';
 import { progressActions, useProgress } from '@/lib/progress/store';
+import { quizAnswer } from '@/lib/progress/types';
 import { QuestionCard } from './question-card';
 
 /** 通常のクイズ: 選んだらすぐ正誤と解説を表示。間違えた問題は復習キューへ入る */
 export function PracticeQuiz({ questions }: { questions: QuizQuestion[] }) {
   const progress = useProgress();
-  const answered = questions.filter((q) => progress.quiz[q.id]);
-  const correct = answered.filter((q) => progress.quiz[q.id].correct).length;
+  const answered = questions.filter((q) => quizAnswer(progress, q.id));
+  const correct = answered.filter((q) => quizAnswer(progress, q.id)!.correct).length;
 
   return (
     <div className="space-y-4">
@@ -27,7 +28,7 @@ export function PracticeQuiz({ questions }: { questions: QuizQuestion[] }) {
         )}
       </div>
       {questions.map((q, i) => {
-        const a = progress.quiz[q.id];
+        const a = quizAnswer(progress, q.id);
         return (
           <QuestionCard
             key={q.id}

@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'worker/test/**/*.test.ts'],
     testTimeout: 60_000,
   },
 });

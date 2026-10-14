@@ -1,6 +1,6 @@
 import type { DayMeta, ExerciseSummary, Level } from '@/content/types';
 import { addDays, diffDays, todayKey, weekStart } from '../dates';
-import type { Progress } from './types';
+import { quizAnswer, type Progress } from './types';
 
 export type DayStatus = 'todo' | 'doing' | 'done';
 
@@ -26,8 +26,8 @@ export const isPassed = (p: Progress, id: string) => !!p.exercises[id]?.passedAt
 
 export function dayProgress(meta: DayMeta, p: Progress): DayProgress {
   const lessonRead = !!p.lessons[String(meta.day)];
-  const answered = meta.quizIds.filter((id) => p.quiz[id]);
-  const quizCorrect = answered.filter((id) => p.quiz[id].correct).length;
+  const answered = meta.quizIds.filter((id) => quizAnswer(p, id));
+  const quizCorrect = answered.filter((id) => quizAnswer(p, id)!.correct).length;
   const required = meta.exercises.filter((e) => !e.optional);
   const optional = meta.exercises.filter((e) => e.optional);
   const requiredPassed = required.filter((e) => isPassed(p, e.id)).length;

@@ -9,3 +9,6 @@ coverage/
 .env*.local
 playwright-report/
 test-results/
+.wrangler/
+playwright-report-cloudflare/
+.dev.vars

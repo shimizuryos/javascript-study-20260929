@@ -9,10 +9,12 @@
     "predev": "node scripts/copy-ts-runtime.mjs && node scripts/build-sandbox.mjs",
     "build": "next build",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p content/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p content/tsconfig.json && tsc --noEmit -p worker/test/tsconfig.json",
     "test": "vitest run",
     "verify": "npm run lint && npm run typecheck && npm run test",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:cloudflare": "playwright test -c playwright.cloudflare.config.ts",
+    "dev:cloudflare": "node scripts/dev-cloudflare.mjs"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "6.2.5",
@@ -28,7 +30,7 @@
     "acorn": "8.18.0",
     "acorn-walk": "8.3.5",
     "gray-matter": "4.0.3",
-    "next": "16.3.7",
+    "next": "16.3.8",
     "nuqs": "2.10.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -42,6 +44,7 @@
     "unified": "11.0.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "5.20261014.1",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "22.20.4",
@@ -49,11 +52,12 @@
     "@types/react-dom": "19.3.0",
     "esbuild": "0.28.2",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.3.7",
+    "eslint-config-next": "16.3.8",
     "jsdom": "30.1.1",
     "prettier": "3.9.9",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
-    "vitest": "5.0.2"
+    "vitest": "5.0.2",
+    "wrangler": "4.151.0"
   }
 }

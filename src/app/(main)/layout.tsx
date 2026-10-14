@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Providers } from '@/components/providers';
 import { NavLink } from '@/components/nav-link';
 import { ReviewBadge } from '@/components/review-badge';
+import { AccountMenu } from '@/components/account-menu';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,11 +25,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <NavLink href="/guide/">使い方</NavLink>
             <NavLink href="/settings/">設定</NavLink>
           </nav>
+          <div className="ml-auto">
+            <AccountMenu />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8">{children}</main>
       <footer className="mx-auto max-w-6xl px-4 pt-4 pb-10 text-xs text-ink-3">
-        進捗はこのブラウザ (localStorage) に保存されます。端末を変えるときは「設定」からエクスポートしてください。
+        進捗はこのブラウザ (localStorage) に保存されます。ログインすると、サーバーにも保存されて他の端末と同期されます。
       </footer>
     </Providers>
   );
