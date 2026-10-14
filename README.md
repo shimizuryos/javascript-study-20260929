@@ -22,7 +22,8 @@
 
 ### 初回の設定
 
-1. Cloudflare に登録し、Workers & Pages で `workers.dev` のサブドメインを決める
+1. Cloudflare に登録し、`workers.dev` のサブドメインを決める (Workers & Pages の「Your subdomain」の「Change」)。
+   未登録のままでも、初回のデプロイで `ci.yml` の `WORKERS_SUBDOMAIN` の名前で自動登録される
 2. D1 データベース `js-study` を作り、Database ID を `wrangler.jsonc` の `database_id` に書く
 3. API トークンを作る (テンプレート「Edit Cloudflare Workers」+ 権限「Account → D1 → Edit」)
 4. GitHub の OAuth App を作る
@@ -38,6 +39,10 @@
    | `OAUTH_GITHUB_CLIENT_SECRET` | 4 の Client secret |
 
 6. main に push する (または Actions タブから `CI / Deploy` を main で手動実行)
+
+デプロイが「サブドメインを登録できませんでした」で失敗したら、その名前は他の人が使っている。
+`ci.yml` の `WORKERS_SUBDOMAIN` を変えるか、手順 1 のとおりダッシュボードで登録してから、Actions タブで `CI / Deploy` を再実行する
+(サブドメインを変えたら、手順 4 の OAuth App の URL も合わせて直す)。
 
 ログインできる GitHub アカウントは `wrangler.jsonc` の `ALLOWED_GITHUB_LOGINS` (カンマ区切り) で決める。空にすると誰でもログインできる。
 

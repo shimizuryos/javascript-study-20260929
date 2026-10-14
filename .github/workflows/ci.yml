@@ -84,6 +84,26 @@ jobs:
             echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID が未設定のため、デプロイをスキップしました (README の手順を参照)"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
+      # workers.dev のサブドメインがまだ無ければ登録する (登録済みなら何もしない)。
+      # 公開 URL は https://javascript-study.<サブドメイン>.workers.dev になる
+      - name: Ensure workers.dev subdomain
+        if: steps.check.outputs.skip != 'true'
+        env:
+          WORKERS_SUBDOMAIN: shimizuryos
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain"
+          current=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api" | jq -r '.result.subdomain // empty')
+          if [ -n "$current" ]; then
+            echo "workers.dev サブドメイン: $current.workers.dev (登録済み)"
+            exit 0
+          fi
+          res=$(curl -sS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data "{\"subdomain\":\"$WORKERS_SUBDOMAIN\"}" "$api")
+          if [ "$(echo "$res" | jq -r '.success')" != "true" ]; then
+            echo "::error::workers.dev サブドメイン \"$WORKERS_SUBDOMAIN\" を登録できませんでした: $(echo "$res" | jq -c '.errors')"
+            exit 1
+          fi
+          echo "workers.dev サブドメインを登録しました: $WORKERS_SUBDOMAIN.workers.dev"
       - uses: actions/checkout@v7
         if: steps.check.outputs.skip != 'true'
       - uses: actions/setup-node@v7
@@ -108,14 +128,20 @@ jobs:
           OAUTH_GITHUB_CLIENT_ID: ${{ secrets.OAUTH_GITHUB_CLIENT_ID }}
           OAUTH_GITHUB_CLIENT_SECRET: ${{ secrets.OAUTH_GITHUB_CLIENT_SECRET }}
         run: |
+          # パイプ (| tee) の途中で wrangler が失敗したら、このステップも失敗にする
+          set -o pipefail
           # GitHub ログイン用の Client ID / Secret を、Worker の secret としてデプロイと一緒に登録する
           secrets_file="$RUNNER_TEMP/worker-secrets.json"
+          trap 'rm -f "$secrets_file"' EXIT
           node -e '
             const s = {};
             for (const k of ["OAUTH_GITHUB_CLIENT_ID", "OAUTH_GITHUB_CLIENT_SECRET"]) if (process.env[k]) s[k] = process.env[k];
             require("fs").writeFileSync(process.argv[1], JSON.stringify(s));
           ' "$secrets_file"
           npx wrangler deploy --secrets-file "$secrets_file" | tee "$RUNNER_TEMP/deploy.log"
-          rm -f "$secrets_file"
-          url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/deploy.log" | head -1)
+          url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/deploy.log" | head -1 || true)
+          if [ -z "$url" ]; then
+            echo "::error::公開 URL (workers.dev) が見つかりません。Cloudflare で workers.dev のサブドメインを登録したか確認してください (README の手順 1)"
+            exit 1
+          fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
