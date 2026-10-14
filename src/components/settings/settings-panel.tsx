@@ -133,7 +133,7 @@ export function SettingsPanel() {
       <Card>
         <h2 className="font-bold">進捗のエクスポート / インポート</h2>
         <p className="mt-1 text-sm text-ink-2">
-          進捗と書きかけのコードは、このブラウザの localStorage
+          ログインしていない場合、進捗と書きかけのコードはこのブラウザの localStorage
           にだけ保存されています。別の端末・ブラウザで続けるときや、ブラウザのデータを消す前に書き出しておきましょう。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">

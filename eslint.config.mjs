@@ -5,7 +5,7 @@ import nextTs from 'eslint-config-next/typescript';
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'public/vendor/**', 'content/**']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'public/vendor/**', 'content/**', '.wrangler/**', 'playwright-report*/**', 'test-results/**']),
   {
     files: ['public/runner/**/*.js'],
     languageOptions: { sourceType: 'script', globals: { self: 'readonly', importScripts: 'readonly' } },

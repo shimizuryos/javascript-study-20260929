@@ -61,13 +61,20 @@ export default function GuidePage() {
 
       <Card>
         <h2 className="font-bold">進捗の保存について</h2>
-        <p className="mt-2 text-sm leading-relaxed text-ink-2">
-          ログインは不要で、進捗はこのブラウザの localStorage に保存されます。端末を変えるときは
-          <Link href="/settings/" className="mx-1 text-accent-strong underline">
-            設定
-          </Link>
-          からファイルに書き出し、移動先で読み込んでください。
-        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-ink-2">
+          <li>
+            右上の「ログイン」から GitHub でログインすると、進捗がサーバーに保存され、PC
+            やスマホなど別の端末と自動で同期されます。
+          </li>
+          <li>ログインしなくても使えます。その場合、進捗はこのブラウザ (localStorage) にだけ保存されます。</li>
+          <li>
+            同じ日に複数の端末で進めても、両方の進捗がまとめられます。
+            <Link href="/settings/" className="mx-1 text-accent-strong underline">
+              設定
+            </Link>
+            からファイルへの書き出しもできます。
+          </li>
+        </ul>
       </Card>
 
       <Card>

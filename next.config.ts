@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
-// GitHub Pages ではリポジトリ名がパスの先頭に付く (例: /javascript-study-20260929)。
-// デプロイ時に PAGES_BASE_PATH を渡し、ローカルでは空文字にする。
+// サイトをサブパス (例: GitHub Pages の /javascript-study-20260929) で配信するときだけ PAGES_BASE_PATH を渡す。
+// Cloudflare Workers ではルート (/) で配信するので空のまま。
 const basePath = process.env.PAGES_BASE_PATH ?? '';
 
 const nextConfig: NextConfig = {

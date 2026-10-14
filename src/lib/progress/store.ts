@@ -17,6 +17,30 @@ let state: Progress = EMPTY_PROGRESS;
 let loaded = false;
 const listeners = new Set<() => void>();
 
+/** 進捗が変わったときの通知 (サーバーとの同期に使う) */
+export type ProgressChange = {
+  /** local: この画面での操作 / remote: サーバーから取り込んだ / tab: 別のタブでの変更 */
+  origin: 'local' | 'remote' | 'tab';
+  /** true のときは「統合せずに丸ごと置き換える」(リセットやインポート) */
+  replace: boolean;
+};
+const changeListeners = new Set<(change: ProgressChange) => void>();
+
+export function onProgressChange(listener: (change: ProgressChange) => void) {
+  changeListeners.add(listener);
+  return () => changeListeners.delete(listener);
+}
+
+export function getProgressSnapshot(): Progress {
+  ensureLoaded();
+  return state;
+}
+
+function notify(change: ProgressChange) {
+  listeners.forEach((l) => l());
+  changeListeners.forEach((l) => l(change));
+}
+
 function safeGet(key: string): string | null {
   try {
     return window.localStorage.getItem(key);
@@ -56,7 +80,7 @@ function ensureLoaded() {
     } catch {
       state = EMPTY_PROGRESS;
     }
-    listeners.forEach((l) => l());
+    notify({ origin: 'tab', replace: false });
   });
 }
 
@@ -86,7 +110,7 @@ export function useProgressReady(): boolean {
   );
 }
 
-function update(recipe: (draft: Progress) => Progress, countActivity = true) {
+function update(recipe: (draft: Progress) => Progress, countActivity = true, replace = false) {
   ensureLoaded();
   let next = recipe(state);
   if (countActivity) {
@@ -99,7 +123,7 @@ function update(recipe: (draft: Progress) => Progress, countActivity = true) {
   }
   state = next;
   safeSet(KEY, JSON.stringify(state));
-  listeners.forEach((l) => l());
+  notify({ origin: 'local', replace });
 }
 
 const REVIEW_INTERVALS: Record<ReviewCard['box'], number> = { 1: 1, 2: 3, 3: 7, 4: 0 };
@@ -114,7 +138,7 @@ export const progressActions = {
       const review = { ...p.review };
       if (!correct && !review[questionId]) {
         // 間違えた問題は翌日から復習キューへ
-        review[questionId] = { box: 1, due: addDays(todayKey(), 1) };
+        review[questionId] = { box: 1, due: addDays(todayKey(), 1), updatedAt: new Date().toISOString() };
       }
       return { ...p, quiz: { ...p.quiz, [questionId]: { choice, correct, at: new Date().toISOString() } }, review };
     });
@@ -123,7 +147,9 @@ export const progressActions = {
   resetQuiz(questionIds: string[]) {
     update((p) => {
       const quiz = { ...p.quiz };
-      for (const id of questionIds) delete quiz[id];
+      const at = new Date().toISOString();
+      // 削除ではなく「消した」印を残す (同期したとき、他の端末の古い回答で上書きされないように)
+      for (const id of questionIds) if (quiz[id]) quiz[id] = { choice: -1, correct: false, at, cleared: true };
       return { ...p, quiz };
     }, false);
   },
@@ -132,7 +158,11 @@ export const progressActions = {
     update((p) => {
       const card = p.review[questionId] ?? { box: 1, due: todayKey() };
       const box = (correct ? Math.min(card.box + 1, 4) : 1) as ReviewCard['box'];
-      const next: ReviewCard = { box, due: box === 4 ? '9999-12-31' : addDays(todayKey(), REVIEW_INTERVALS[box]) };
+      const next: ReviewCard = {
+        box,
+        due: box === 4 ? '9999-12-31' : addDays(todayKey(), REVIEW_INTERVALS[box]),
+        updatedAt: new Date().toISOString(),
+      };
       return { ...p, review: { ...p.review, [questionId]: next } };
     });
   },
@@ -169,7 +199,7 @@ export const progressActions = {
       const now = new Date().toISOString();
       const review = { ...p.review };
       for (const id of wrongIds) {
-        if (!review[id] || review[id].box === 4) review[id] = { box: 1, due: addDays(todayKey(), 1) };
+        if (!review[id] || review[id].box === 4) review[id] = { box: 1, due: addDays(todayKey(), 1), updatedAt: now };
       }
       return {
         ...p,
@@ -189,17 +219,26 @@ export const progressActions = {
   },
 
   setStartDate(date: string | null) {
-    update((p) => ({ ...p, startDate: date }), false);
+    update((p) => ({ ...p, startDate: date, startDateSetAt: new Date().toISOString() }), false);
   },
 
+  /** ファイルからの読み込み。ログイン中はサーバーの進捗もこの内容で置き換える */
   replaceAll(next: Progress) {
-    update(() => normalize(next), false);
+    update(() => normalize(next), false, true);
   },
 
   resetAll() {
-    update(() => EMPTY_PROGRESS, false);
+    update(() => EMPTY_PROGRESS, false, true);
   },
 };
+
+/** サーバーから取り込んだ進捗を反映する (同期処理から呼ぶ) */
+export function applyRemoteProgress(next: Progress) {
+  ensureLoaded();
+  state = normalize(next);
+  safeSet(KEY, JSON.stringify(state));
+  notify({ origin: 'remote', replace: false });
+}
 
 // ---------------------------------------------------------------------------
 // 演習の書きかけコード (進捗とは別キーに保存)

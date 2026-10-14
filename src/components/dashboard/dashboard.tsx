@@ -7,6 +7,7 @@ import { LEVELS } from '@/content/types';
 import { useExportedAt, useProgress, useProgressReady } from '@/lib/progress/store';
 import { dueReviewIds, overview, plannedDay, streak } from '@/lib/progress/selectors';
 import { useToday } from '@/lib/use-today';
+import { useSyncState } from '@/lib/sync/sync';
 import { Card, LevelDot, Meter } from '@/components/ui';
 import { ActivityHeatmap } from './activity-heatmap';
 import { DayPlan } from './day-plan';
@@ -35,6 +36,7 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
   const nextProgress = next ? ov.days.find((d) => d.day === next.day) : null;
   const started = Object.keys(progress.activity).length > 0;
   const exportedAt = useExportedAt();
+  const sync = useSyncState();
 
   return (
     <div className={`space-y-6 transition-opacity ${ready ? 'opacity-100' : 'opacity-0'}`}>
@@ -116,7 +118,7 @@ export function Dashboard({ metas, target }: { metas: DayMeta[]; target: TargetC
         />
       </section>
 
-      {ov.daysDone >= 3 && exportedAt === null && (
+      {ov.daysDone >= 3 && exportedAt === null && sync.auth !== 'user' && (
         <Link
           href="/settings/"
           className="flex items-center justify-between gap-3 rounded-xl border border-warn bg-warn-soft p-4 text-sm"
