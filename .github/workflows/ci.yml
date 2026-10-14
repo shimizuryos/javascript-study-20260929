@@ -84,6 +84,26 @@ jobs:
             echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID が未設定のため、デプロイをスキップしました (README の手順を参照)"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
+      # workers.dev のサブドメインがまだ無ければ登録する (登録済みなら何もしない)。
+      # 公開 URL は https://javascript-study.<サブドメイン>.workers.dev になる
+      - name: Ensure workers.dev subdomain
+        if: steps.check.outputs.skip != 'true'
+        env:
+          WORKERS_SUBDOMAIN: shimizuryos
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain"
+          current=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api" | jq -r '.result.subdomain // empty')
+          if [ -n "$current" ]; then
+            echo "workers.dev サブドメイン: $current.workers.dev (登録済み)"
+            exit 0
+          fi
+          res=$(curl -sS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data "{\"subdomain\":\"$WORKERS_SUBDOMAIN\"}" "$api")
+          if [ "$(echo "$res" | jq -r '.success')" != "true" ]; then
+            echo "::error::workers.dev サブドメイン \"$WORKERS_SUBDOMAIN\" を登録できませんでした: $(echo "$res" | jq -c '.errors')"
+            exit 1
+          fi
+          echo "workers.dev サブドメインを登録しました: $WORKERS_SUBDOMAIN.workers.dev"
       - uses: actions/checkout@v7
         if: steps.check.outputs.skip != 'true'
       - uses: actions/setup-node@v7
