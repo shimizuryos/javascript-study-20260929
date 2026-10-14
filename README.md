@@ -39,6 +39,9 @@
 
 6. main に push する (または Actions タブから `CI / Deploy` を main で手動実行)
 
+デプロイのログに `You need to register a workers.dev subdomain` と出たら、手順 1 のサブドメインがまだ登録されていない。
+登録してから、Actions タブで失敗した `CI / Deploy` を再実行する。
+
 ログインできる GitHub アカウントは `wrangler.jsonc` の `ALLOWED_GITHUB_LOGINS` (カンマ区切り) で決める。空にすると誰でもログインできる。
 
 ## ローカルで動かす
