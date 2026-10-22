@@ -10,7 +10,7 @@
 import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
-import matter from 'gray-matter';
+import { parseFrontmatter } from './frontmatter';
 import { highlightCode, renderInlineMarkdown, renderMarkdown } from './markdown';
 import type {
   Day,
@@ -156,7 +156,7 @@ export function readExercise(dir: string, day: number, exam: boolean): RawExerci
   const rel = path.relative(process.cwd(), dir);
   const readme = path.join(dir, 'README.md');
   if (!exists(readme)) throw new Error(`${rel}: README.md がありません`);
-  const { data, content } = matter(read(readme));
+  const { data, content } = parseFrontmatter(read(readme));
   const meta = data as ExerciseFrontmatter;
   if (!meta.title) throw new Error(`${rel}/README.md: title がありません`);
   const main = findOne(dir, 'main');
@@ -262,7 +262,7 @@ export function listRawExercises(day: number): { regular: RawExercise[]; exam: R
 
 function readLesson(day: number) {
   const file = path.join(DAYS_DIR, dayDirName(day), 'lesson.md');
-  const { data, content } = matter(read(file));
+  const { data, content } = parseFrontmatter(read(file));
   const fm = data as LessonFrontmatter;
   if (fm.day !== day) throw new Error(`${file}: frontmatter の day (${fm.day}) がディレクトリ名と一致しません`);
   for (const key of ['level', 'title', 'summary', 'minutes'] as const) {
@@ -274,7 +274,7 @@ function readLesson(day: number) {
 function readExamMeta(day: number) {
   const file = path.join(DAYS_DIR, dayDirName(day), 'exam', 'exam.md');
   if (!exists(file)) return null;
-  const { data, content } = matter(read(file));
+  const { data, content } = parseFrontmatter(read(file));
   const fm = data as ExamFrontmatter;
   if (!fm.title || !fm.level) throw new Error(`${file}: title と level が必要です`);
   return { fm, content };
